@@ -26,10 +26,5 @@ public class Bank  {
 	{
 		return bank.contains(key);
 	}
-	
-	
-	
-	
-	
 
 }
