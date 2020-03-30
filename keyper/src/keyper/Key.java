@@ -1,12 +1,18 @@
 package keyper;
 
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+
 
 public class Key {
 	
+	private int mAutocleartime;
 	public static SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
 	private static int num = 0;
 	private int mId;
@@ -18,9 +24,9 @@ public class Key {
 	private Date mExpired;
     private Map<Date, Key> mHistory;
     
-    
-	public Key(String mId, String mTitle, String mUsername, String mPassword, int mQuality, String mUrl, Date mExpired) {
-		this.mId=num++;
+  	public Key(int autocleartime, String mId, String mTitle, String mUsername, String mPassword, int mQuality, String mUrl, Date mExpired) {
+		this.mAutocleartime=12;
+  		this.mId=num++;
 		this.mTitle = mTitle;
 		this.mUsername = mUsername;
 		this.mPassword = mPassword;
@@ -28,9 +34,25 @@ public class Key {
 		this.mUrl = mUrl;
 		this.mExpired = mExpired;
 		this.mHistory = new HashMap<>();
+		mHistory.put(new Date(), this);
 	}
 
-
+	@SuppressWarnings("unlikely-arg-type")
+	public void deletehistorykey(Date date)
+    {
+		mHistory.remove(mHistory.get(date));
+    }
+    
+	public Key searchhistorykey(Date date)
+	{
+		return (mHistory.get(date));
+	}
+    
+	public Set<java.util.Map.Entry<Date, Key>> gethistory()
+	{
+		return (mHistory.entrySet());
+	}
+	
 	public int getmId() {
 		return mId;
 	}
@@ -93,18 +115,29 @@ public class Key {
 
 	public void setmExpired(Date mExpired) {
 		this.mExpired = mExpired;
-	}
-
-
-	public Map<Date, Key> getmHistory() {
-		return mHistory;
-	}
-
-
-	public void setmHistory(Map<Date, Key> mHistory) {
-		this.mHistory = mHistory;
-	}
+	}    
     
-    
+	
+	public int getmAutocleartime() {
+		return mAutocleartime;
+	}
+
+	public void setmAutocleartime(int mAutocleartime) {
+		this.mAutocleartime = mAutocleartime;
+	}
+
+	public void copyusername() throws InterruptedException
+	{
+		Systemclipboard.copy(this.mUsername);
+		TimeUnit.SECONDS.sleep(mAutocleartime);
+		Systemclipboard.clear();
+	}
+	
+	public void copypassword() throws InterruptedException
+	{
+		Systemclipboard.copy(this.mPassword);
+		TimeUnit.SECONDS.sleep(mAutocleartime);
+		Systemclipboard.clear();
+	}
    
 }
