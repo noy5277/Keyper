@@ -7,23 +7,19 @@ import java.awt.datatransfer.StringSelection;
 public class Systemclipboard 
 {
 	
-	public static Clipboard clipboard;
-		
-	public Systemclipboard()
-	{
-		Systemclipboard.clipboard= Toolkit.getDefaultToolkit().getSystemClipboard();
-	}
-		
+	public static Clipboard clipboard=Toolkit.getDefaultToolkit().getSystemClipboard();
+	
+	
 	        
 	public static void copy(String text)
     {
-		clipboard.setContents(new StringSelection(text), null);
+		clipboard.setContents(new StringSelection(text), new StringSelection(text));
     }
 			
 
 	public static void clear()
     {
-     	clipboard.setContents(null, null);
+     	clipboard.setContents(new StringSelection(""), new StringSelection(""));
     }	
 }
 

@@ -1,7 +1,6 @@
 package keyper;
 
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 public class Key {
 	
 	private int mAutocleartime;
-	public static SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
 	private static int num = 0;
 	private int mId;
 	private String mTitle;
@@ -22,35 +20,42 @@ public class Key {
 	private int mQuality;
 	private String mUrl;
 	private Date mExpired;
-    private Map<Date, Key> mHistory;
+    private Map<Date, String> mHistory;
     
-  	public Key(int autocleartime, String mId, String mTitle, String mUsername, String mPassword, int mQuality, String mUrl, Date mExpired) {
+  	public Key (String mTitle, String mUsername, String mPassword, String mUrl){
 		this.mAutocleartime=12;
   		this.mId=num++;
 		this.mTitle = mTitle;
 		this.mUsername = mUsername;
 		this.mPassword = mPassword;
 		this.mQuality = 0;
-		this.mUrl = mUrl;
-		this.mExpired = mExpired;
+		this.mUrl = null;
+		this.mExpired = null;
 		this.mHistory = new HashMap<>();
-		mHistory.put(new Date(), this);
+		mHistory.put(new Date(), this.mPassword);
 	}
 
 	@SuppressWarnings("unlikely-arg-type")
 	public void deletehistorykey(Date date)
     {
-		mHistory.remove(mHistory.get(date));
+		this.mHistory.remove(this.mHistory.get(date));
     }
     
-	public Key searchhistorykey(Date date)
+	public String searchhistorykey(Date date)
 	{
-		return (mHistory.get(date));
+		return (this.mHistory.get(date));
 	}
+	
+	public Set<Date> gethistorydates() {
+		
+		return this.mHistory.keySet();
+		
+	}
+
     
-	public Set<java.util.Map.Entry<Date, Key>> gethistory()
+	public Set<java.util.Map.Entry<Date, String>> gethistory()
 	{
-		return (mHistory.entrySet());
+		return (this.mHistory.entrySet());
 	}
 	
 	public int getmId() {
@@ -112,12 +117,10 @@ public class Key {
 		return mExpired;
 	}
 
-
-	public void setmExpired(Date mExpired) {
-		this.mExpired = mExpired;
+	public void setmExpired(Date mexpired) {
+	   this.mExpired=mexpired;
 	}    
     
-	
 	public int getmAutocleartime() {
 		return mAutocleartime;
 	}
