@@ -20,7 +20,7 @@ public class Key {
 	private int mQuality;
 	private String mUrl;
 	private Date mExpired;
-    private Map<Date, String> mHistory;
+    private Map<Date, Key> mHistory;
     
   	public Key (String mTitle, String mUsername, String mPassword, String mUrl){
 		this.mAutocleartime=12;
@@ -32,7 +32,7 @@ public class Key {
 		this.mUrl = null;
 		this.mExpired = null;
 		this.mHistory = new HashMap<>();
-		mHistory.put(new Date(), this.mPassword);
+		mHistory.put(new Date(), this);
 	}
 
 	@SuppressWarnings("unlikely-arg-type")
@@ -41,9 +41,14 @@ public class Key {
 		this.mHistory.remove(this.mHistory.get(date));
     }
     
-	public String searchhistorykey(Date date)
+	public Key viewhistorykey(Date date)
 	{
 		return (this.mHistory.get(date));
+	}
+	
+	public void restore(Date date)
+	{
+		this.setmPassword(this.mHistory.get(date).getmPassword());
 	}
 	
 	public Set<Date> gethistorydates() {
@@ -53,7 +58,7 @@ public class Key {
 	}
 
     
-	public Set<java.util.Map.Entry<Date, String>> gethistory()
+	public Set<java.util.Map.Entry<Date, Key>> gethistory()
 	{
 		return (this.mHistory.entrySet());
 	}

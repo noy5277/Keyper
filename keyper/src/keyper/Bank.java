@@ -22,7 +22,7 @@ public class Bank  {
 		bank.remove(key);
 	}
 	
-	boolean searchkey(Key key)
+	boolean isexist(Key key)
 	{
 		return bank.contains(key);
 	}
