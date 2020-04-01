@@ -26,5 +26,12 @@ public class Bank  {
 	{
 		return bank.contains(key);
 	}
+	
+	public void sync(Bank bank)
+	{
+		
+	}
+	
+	
 
 }

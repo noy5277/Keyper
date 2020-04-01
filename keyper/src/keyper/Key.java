@@ -166,6 +166,7 @@ public class Key {
 		Iterator<?> itr=entries.iterator();
 		while(itr.hasNext())
 		{
+			@SuppressWarnings("rawtypes")
 			Map.Entry e=(Map.Entry)itr.next();
 			System.out.println(e.getKey()+"="+e.getValue());
 			
