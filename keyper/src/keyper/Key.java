@@ -1,8 +1,10 @@
 package keyper;
 
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -19,8 +21,8 @@ public class Key {
 	private String mPassword;
 	private int mQuality;
 	private String mUrl;
-	private Date mExpired;
-    private Map<Date, Key> mHistory;
+	private LocalDateTime mExpired;
+    private Map<LocalDateTime, Key> mHistory;
     
   	public Key (String mTitle, String mUsername, String mPassword, String mUrl){
 		this.mAutocleartime=12;
@@ -32,7 +34,7 @@ public class Key {
 		this.mUrl = null;
 		this.mExpired = null;
 		this.mHistory = new HashMap<>();
-		mHistory.put(new Date(), this);
+		mHistory.put(LocalDateTime.now(), this);
 	}
 
 	@SuppressWarnings("unlikely-arg-type")
@@ -41,24 +43,33 @@ public class Key {
 		this.mHistory.remove(this.mHistory.get(date));
     }
     
-	public Key viewhistorykey(Date date)
+	public Key viewhistorykey(LocalDateTime date)
 	{
 		return (this.mHistory.get(date));
 	}
 	
-	public void restore(Date date)
+	public void restore(LocalDateTime date)
 	{
-		this.setmPassword(this.mHistory.get(date).getmPassword());
+		Key r=this.mHistory.get(date);
+		this.mId=r.mId;
+		this.mTitle = r.mTitle;
+		this.mUsername = r.mUsername;
+		this.mPassword =r.mPassword;
+		this.mQuality = r.mQuality;
+		this.mUrl = r.mUrl;
+		this.mExpired = r.mExpired;
+		
 	}
 	
-	public Set<Date> gethistorydates() {
+	
+	public Set<LocalDateTime> gethistorydates() {
 		
 		return this.mHistory.keySet();
 		
 	}
 
     
-	public Set<java.util.Map.Entry<Date, Key>> gethistory()
+	public Set<java.util.Map.Entry<LocalDateTime, Key>> gethistory()
 	{
 		return (this.mHistory.entrySet());
 	}
@@ -85,6 +96,7 @@ public class Key {
 
 	public void setmUsername(String mUsername) {
 		this.mUsername = mUsername;
+		mHistory.put(LocalDateTime.now(), this);
 	}
 
 
@@ -95,6 +107,7 @@ public class Key {
 
 	public void setmPassword(String mPassword) {
 		this.mPassword = mPassword;
+		mHistory.put(LocalDateTime.now(), this);
 	}
 
 
@@ -118,11 +131,11 @@ public class Key {
 	}
 
 
-	public Date getmExpired() {
+	public LocalDateTime getmExpired() {
 		return mExpired;
 	}
 
-	public void setmExpired(Date mexpired) {
+	public void setmExpired(LocalDateTime mexpired) {
 	   this.mExpired=mexpired;
 	}    
     
@@ -146,6 +159,18 @@ public class Key {
 		Systemclipboard.copy(this.mPassword);
 		TimeUnit.SECONDS.sleep(mAutocleartime);
 		Systemclipboard.clear();
+	}
+	
+	public void printhistory() {
+		Set<?> entries=this.mHistory.entrySet();
+		Iterator<?> itr=entries.iterator();
+		while(itr.hasNext())
+		{
+			Map.Entry e=(Map.Entry)itr.next();
+			System.out.println(e.getKey()+"="+e.getValue());
+			
+		}
+		
 	}
    
 }
