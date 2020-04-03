@@ -1,5 +1,16 @@
 package keyper;
 
-public class Autentication {
 
-}
+public abstract class Autentication 
+{
+	
+	
+	
+	
+	
+	
+	
+	
+	
+};
+	

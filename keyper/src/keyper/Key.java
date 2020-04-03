@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 
 
-public class Key {
+public class Key extends Generator {
 	
 	private int mAutocleartime;
 	private static int num = 0;
@@ -107,6 +107,11 @@ public class Key {
 
 	public void setmPassword(String mPassword) {
 		this.mPassword = mPassword;
+		mHistory.put(LocalDateTime.now(), this);
+	}
+	
+	public void generatePassword(int lenght,boolean capital, boolean letter, boolean numbers, boolean specials) {
+		this.mPassword=generate(lenght, capital, letter, numbers, specials);
 		mHistory.put(LocalDateTime.now(), this);
 	}
 
