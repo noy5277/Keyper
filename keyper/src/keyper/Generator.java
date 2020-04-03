@@ -20,7 +20,7 @@ public abstract class Generator {
 	}
 	
 	
-	public String generate(int lenght,boolean capital, boolean letter, boolean numbers, boolean specials) {
+	protected String generate(int lenght,boolean capital, boolean letter, boolean numbers, boolean specials) {
 	
 		if(capital)
 			properties.add(stat.capital);
