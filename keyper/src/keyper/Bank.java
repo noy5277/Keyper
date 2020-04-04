@@ -32,6 +32,9 @@ public class Bank  {
 		
 	}
 	
-	
+	public void search(Bank bank)
+	{
+		
+	}
 
 }
