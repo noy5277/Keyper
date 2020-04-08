@@ -1,6 +1,5 @@
 package keyper;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -9,9 +8,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Map;
 import java.util.Scanner;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -74,7 +71,7 @@ public class Database extends Generator{
 		 return new String(cipher.doFinal(Base64.getDecoder().decode(data)));
 	 }
 	 
-	 public void push()
+	 private void push()
 	 {
 		 
 	 }
