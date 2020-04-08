@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Key extends Generator {
 	
-	private int mAutocleartime;
+	private int mAutocleartime; //wait after copy to clipboard
 	private static int num = 0;
 	private int mId;
 	private String mTitle;

@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.function.Predicate;
+
+import javax.crypto.NoSuchPaddingException;
 
 public class MasterPassword extends Autentication{
 
@@ -12,12 +15,22 @@ public class MasterPassword extends Autentication{
 	private String msid;
 	private boolean valid=true;
 	private ArrayList<Boolean> check=new ArrayList<>();
+	private Bank mBank;
+	private Database mDatabase;
 	
-	public MasterPassword(String password, String keyfile, String sid)throws NoSuchAlgorithmException {
+	
+	public MasterPassword(Database mDatabase, String password, String keyfile, String sid)throws NoSuchAlgorithmException, NoSuchPaddingException {
 		this.mpassword = password;
 		this.mkeyfile = keyfile;
 		this.msid = sid;
+		this.mBank=new Bank();
+		this.mDatabase=mDatabase;
 		
+	}
+
+
+	public Bank getmBank() {
+		return mBank;
 	}
 
 	public String getPassword() {
@@ -44,11 +57,11 @@ public class MasterPassword extends Autentication{
 		this.msid = sid;
 	}
 	
-	public boolean login(File infile,String inpassword,boolean password, boolean file, boolean sid) throws IOException, NoSuchAlgorithmException
+	public boolean signin(File infile,String inpassword,boolean password, boolean file, boolean sid) throws IOException, NoSuchAlgorithmException
 	{
 		if(password)
 			check.add(comparepasswords(inpassword, mpassword));
-		if(file)
+		if(file&&password)
 			check.add(comparefiles(infile, mkeyfile));
 		if(sid)
 		    check.add(comparesids(msid));
