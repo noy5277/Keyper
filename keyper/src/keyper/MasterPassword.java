@@ -3,6 +3,7 @@ package keyper;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
@@ -13,19 +14,21 @@ public class MasterPassword extends Autentication{
 	private String mpassword;
 	private String mkeyfile;
 	private String msid;
-	private boolean valid=true;
-	private ArrayList<Boolean> check=new ArrayList<>();
 	private Bank mBank;
 	private Database mDatabase;
 	
-	
-	public MasterPassword(Database mDatabase, String password, String keyfile, String sid)throws NoSuchAlgorithmException, NoSuchPaddingException {
+	public MasterPassword(String DBpath, String password, String keyfile, String sid)throws NoSuchAlgorithmException, NoSuchPaddingException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		this.mpassword = password;
 		this.mkeyfile = keyfile;
 		this.msid = sid;
 		this.mBank=new Bank();
-		this.mDatabase=mDatabase;
+		this.mDatabase=new Database(DBpath, password);
 		
+	}
+
+
+	public Database getmDatabase() {
+		return mDatabase;
 	}
 
 
@@ -59,19 +62,13 @@ public class MasterPassword extends Autentication{
 	
 	public boolean signin(File infile,String inpassword,boolean password, boolean file, boolean sid) throws IOException, NoSuchAlgorithmException
 	{
-		if(password)
-			check.add(comparepasswords(inpassword, mpassword));
 		if(file&&password)
-			check.add(comparefiles(infile, mkeyfile));
+			return (comparefiles(infile, mkeyfile)&&comparepasswords(inpassword, mpassword));
+		if(password)
+			return (comparepasswords(inpassword, mpassword));
 		if(sid)
-		    check.add(comparesids(msid));
-		 
-		for(int i=0;i<check.size();i++)
-		{
-			valid=check.get(i) && valid;
-		}
-		return valid;
-
+		    return (comparesids(msid));
+			return false;
 	}
 	
 	

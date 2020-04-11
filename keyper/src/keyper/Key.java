@@ -2,6 +2,7 @@ package keyper;
 
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,20 +14,22 @@ import java.util.concurrent.TimeUnit;
 
 public class Key extends Generator {
 	
-	private int mAutocleartime; //wait after copy to clipboard
+	private final int mAutocleartime=12; //wait after copy to clipboard
 	private static int num = 0;
 	private int mId;
+	private String mGroup;
 	private String mTitle;
 	private String mUsername;
 	private String mPassword;
 	private int mQuality;
 	private String mUrl;
-	private LocalDateTime mExpired;
+	private Date mExpired;
     private Map<LocalDateTime, Key> mHistory;
+    final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
-  	public Key (String mTitle, String mUsername, String mPassword, String mUrl){
-		this.mAutocleartime=12;
+  	public Key (String mTitle,String mGroup, String mUsername, String mPassword, String mUrl){
   		this.mId=num++;
+  		this.mGroup=mGroup;
 		this.mTitle = mTitle;
 		this.mUsername = mUsername;
 		this.mPassword = mPassword;
@@ -48,6 +51,14 @@ public class Key extends Generator {
 		return (this.mHistory.get(date));
 	}
 	
+	public String getmGroup() {
+		return mGroup;
+	}
+
+	public void setmGroup(String mGroup) {
+		this.mGroup = mGroup;
+	}
+
 	public void restore(LocalDateTime date)
 	{
 		Key r=this.mHistory.get(date);
@@ -95,24 +106,27 @@ public class Key extends Generator {
 
 
 	public void setmUsername(String mUsername) {
-		this.mUsername = mUsername;
-		mHistory.put(LocalDateTime.now(), this);
+		this.mUsername=mUsername;
+		mHistory.put(LocalDateTime.now(),new Key(this.mTitle,this.mGroup, mUsername, this.mPassword, this.mUrl));
+		
 	}
 
 
 	public String getmPassword() {
 		return mPassword;
+		
 	}
 
 
 	public void setmPassword(String mPassword) {
 		this.mPassword = mPassword;
-		mHistory.put(LocalDateTime.now(), this);
+		this.mHistory.put(LocalDateTime.now(), new Key(this.mTitle,this.mGroup, this.mUsername, mPassword, this.mUrl));
+
 	}
 	
 	public void generatePassword(int lenght,boolean capital, boolean letter, boolean numbers, boolean specials) {
 		this.mPassword=generate(lenght, capital, letter, numbers, specials);
-		mHistory.put(LocalDateTime.now(), this);
+		this.mHistory.put(LocalDateTime.now(), new Key(this.mTitle,this.mGroup, this.mUsername, this.mPassword, this.mUrl));
 	}
 
 
@@ -136,11 +150,11 @@ public class Key extends Generator {
 	}
 
 
-	public LocalDateTime getmExpired() {
+	public Date getmExpired() {
 		return mExpired;
 	}
 
-	public void setmExpired(LocalDateTime mexpired) {
+	public void setmExpired(Date mexpired) {
 	   this.mExpired=mexpired;
 	}    
     
@@ -148,9 +162,6 @@ public class Key extends Generator {
 		return mAutocleartime;
 	}
 
-	public void setmAutocleartime(int mAutocleartime) {
-		this.mAutocleartime = mAutocleartime;
-	}
 
 	public void copyusername() throws InterruptedException
 	{
@@ -167,13 +178,17 @@ public class Key extends Generator {
 	}
 	
 	public void printhistory() {
+		Key k;
+		LocalDateTime ldc;
 		Set<?> entries=this.mHistory.entrySet();
 		Iterator<?> itr=entries.iterator();
 		while(itr.hasNext())
 		{
 			@SuppressWarnings("rawtypes")
 			Map.Entry e=(Map.Entry)itr.next();
-			System.out.println(e.getKey()+"="+e.getValue());
+			ldc=(LocalDateTime)e.getKey();
+			k=(Key)e.getValue();
+			System.out.println(ldc+"="+k.getmPassword()+"="+k.getmId());
 			
 		}
 		

@@ -8,10 +8,13 @@ public class Bank  {
 
 	public Bank() {
 		
-		this.bank = new HashSet<>();
-		
+		this.bank=new HashSet<>();
 	}
 	
+	public Set<Key> getBank() {
+		return this.bank;
+	}
+
 	void addkey(Key key)
 	{
 		bank.add(key);
@@ -36,5 +39,7 @@ public class Bank  {
 	{
 		
 	}
+
+	
 
 }

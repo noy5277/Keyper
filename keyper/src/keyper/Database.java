@@ -1,32 +1,49 @@
 package keyper;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Scanner;
+
+import java.util.Set;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.IOException;
+
+
 
 public class Database extends Generator{
 	
 	private static String myKey;
 	final Cipher cipher;
 	private static SecretKeySpec secretKey;
-	private File db;
+	private String path;
+	private static Connection conn = null;
+	private static Statement stat = null;
 
 	@SuppressWarnings("static-access")
-	public Database(File db) throws NoSuchPaddingException, NoSuchAlgorithmException{
-		this.db = db;
+	public Database(String path,String master) throws NoSuchPaddingException, NoSuchAlgorithmException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
+		this.path=path;
 		this.cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
 		this.myKey = generate(15,true,true,true,true);
+		String dbpath = "jdbc:derby:"+path+";create=true";
+		String driver = "org.apache.derby.jdbc.EmbeddedDriver";
+		Class.forName(driver).newInstance();
+		this.conn = DriverManager.getConnection(dbpath,"shem",master);
+		this.stat=conn.createStatement();
+		this.createtables();
 
 	}
 	
@@ -52,29 +69,71 @@ public class Database extends Generator{
 	 
 	 
 	 
-	 private File encrypt (String strToEncrypt) throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException, InvalidKeyException
+	 public String encrypt (String strToEncrypt) throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException, InvalidKeyException
 	 {
-		 FileWriter myWriter=new FileWriter(db);
+		 String temp;
 		 cipher.init(Cipher.ENCRYPT_MODE, setKey());
-		 myWriter.write(Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8"))));
-		 myWriter.close();
-		 return db;
+		 temp=Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
+		 return temp;
 	 }
 	 
-	 private String decrypt () throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException, InvalidKeyException
+	 public String decrypt (String strToDecrypt) throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException, InvalidKeyException
 	 {
-		 File myObj=new File(db.getAbsolutePath());
-		 Scanner myReader = new Scanner(myObj);
 		 cipher.init(Cipher.DECRYPT_MODE, setKey());
-		 String data = myReader.nextLine();
-		 myReader.close(); 
-		 return new String(cipher.doFinal(Base64.getDecoder().decode(data)));
+		 return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
 	 }
 	 
-	 private void push()
+	 
+	
+	 public void createtables() throws SQLException 
 	 {
 		 
+		 String query = "CREATE TABLE Bank( "
+		         + "Id INT NOT NULL GENERATED ALWAYS AS IDENTITY, "
+		         + "Title VARCHAR(255), "
+		         + "GroupName VARCHAR(255), "
+		         + "Username VARCHAR(255), "
+		         + "Password VARCHAR(255), "
+		         + "URL VARCHAR(255),"
+		         + "Expired DATE)";
+		         stat.execute(query);
+		String query1 = "CREATE TABLE History( "
+	             + "Id INT NOT NULL GENERATED ALWAYS AS IDENTITY, "
+			     + "KeyId VARCHAR(255), "
+			     + "Date DATE, "
+		         + "Title VARCHAR(255), "
+		         + "GroupName VARCHAR(255), "
+		         + "Username VARCHAR(255), "
+		         + "Password VARCHAR(255), "
+			     + "URL VARCHAR(255),"
+		         + "Expired DATE)";
+		         stat.execute(query1);
+		         
 	 }
+	 
+	 public void insert(Bank bnk) throws SQLException
+	 {
+		 PreparedStatement psInsert=null;
+		 Set<Key> keys=bnk.getBank();
+		 for(Key key :keys)
+		 {
+	       psInsert = conn.prepareStatement("insert into Bank"
+	       	+ " (Title,GroupName,Username,Password,URL,Expired) values (?,?,?,?,?,?)");	
+		   psInsert.setString(1, key.getmTitle());
+		   psInsert.setString(2, key.getmGroup());
+		   psInsert.setString(3, key.getmUsername());
+		   psInsert.setString(4, key.getmPassword());
+		   psInsert.setString(5, key.getmUrl());
+		   psInsert.setDate(6, (Date) key.getmExpired());
+		   psInsert.executeUpdate();
+		 }
+		 
+		 
+	 }
+	 
+	 
+	 
+	 
 
 	 
 	 

@@ -17,7 +17,7 @@ public abstract class Autentication {
 		return input.equals(saved);
 	}
 	
-	private static String getFileChecksum(File file) throws IOException, NoSuchAlgorithmException
+	public static String getFileChecksum(File file) throws IOException, NoSuchAlgorithmException
 	{
 		MessageDigest shaDigest = MessageDigest.getInstance("SHA-1");
 	    //Get file input stream for reading the file content
