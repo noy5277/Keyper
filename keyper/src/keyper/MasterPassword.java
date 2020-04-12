@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.function.Predicate;
-
 import javax.crypto.NoSuchPaddingException;
 
 public class MasterPassword extends Autentication{

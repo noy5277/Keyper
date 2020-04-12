@@ -22,7 +22,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-import javax.sound.midi.VoiceStatus;
+
 
 import java.io.IOException;
 
@@ -34,7 +34,7 @@ public class Database extends Generator{
 	final Cipher cipher;
 	private static SecretKeySpec secretKey;
 	private String dbpath;
-	private static Connection conn = null;
+	private Connection conn = null;
 	private static Statement stat = null;
 
 	@SuppressWarnings("static-access")
