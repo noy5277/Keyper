@@ -1,20 +1,15 @@
 package keyper;
 
-
-
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.NotSerializableException;
-import java.io.ObjectOutputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.util.concurrent.TimeUnit;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+
+
 
 public class tests extends Autentication{
 
@@ -24,9 +19,10 @@ public class tests extends Autentication{
 		Bank bnk=new Bank();
 		bnk.addkey(key);
 		MasterPassword master=new MasterPassword("c:/sqlite/db/database.db", "password", "", "");
-		master.getmDatabase().insert(bnk);
-
+		master.getmDatabase().push(bnk);
+		master.getmDatabase().lock();
 	
+		
 	}
 	
 

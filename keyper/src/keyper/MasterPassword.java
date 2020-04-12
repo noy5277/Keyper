@@ -16,14 +16,25 @@ public class MasterPassword extends Autentication{
 	private String msid;
 	private Bank mBank;
 	private Database mDatabase;
+	private String path;
 	
-	public MasterPassword(String DBpath, String password, String keyfile, String sid)throws NoSuchAlgorithmException, NoSuchPaddingException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public MasterPassword(String path, String password, String keyfile, String sid)throws NoSuchAlgorithmException, NoSuchPaddingException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		this.mpassword = password;
+		this.path=path;
 		this.mkeyfile = keyfile;
 		this.msid = sid;
 		this.mBank=new Bank();
-		this.mDatabase=new Database(DBpath, password);
-		
+		this.mDatabase=new Database(this);	
+	}
+
+
+	public String getPath() {
+		return path;
+	}
+
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 
