@@ -37,6 +37,7 @@ public class Key extends Generator {
 		mHistory.put(new Date(), this);
 	}
 
+
 	@SuppressWarnings("unlikely-arg-type")
 	public void deletehistorykey(Date date)
     {
@@ -188,6 +189,11 @@ public class Key extends Generator {
 			System.out.println(ldc+"="+k.getmPassword()+"="+k.getmId());
 			
 		}
+		
+	}
+
+	public void setmId(String mid) {
+		this.mId = mid;
 		
 	}
    

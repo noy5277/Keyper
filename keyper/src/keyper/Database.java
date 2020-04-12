@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
@@ -79,7 +80,7 @@ public class Database extends Generator{
 		 
 	 }
 	 
-	 public String decrypt (String strToDecrypt) throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException, InvalidKeyException
+	 private String decrypt (String strToDecrypt) throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException, InvalidKeyException
 	 {
 		 cipher.init(Cipher.DECRYPT_MODE, setKey());
 		 return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
@@ -91,7 +92,6 @@ public class Database extends Generator{
 	 {
 		 
 		 String query = "CREATE TABLE Bank( "
-		         + "Id INT NOT NULL GENERATED ALWAYS AS IDENTITY, "
 		         + "KeyId VARCHAR(255), "
 		         + "Title VARCHAR(255), "
 		         + "GroupName VARCHAR(255), "
@@ -101,7 +101,6 @@ public class Database extends Generator{
 		         + "Expired DATE)";
 		         stat.execute(query);
 		String query1 = "CREATE TABLE History( "
-	             + "Id INT NOT NULL GENERATED ALWAYS AS IDENTITY, "
 			     + "KeyId VARCHAR(255), "
 		         + "Title VARCHAR(255), "
 		         + "GroupName VARCHAR(255), "
@@ -127,7 +126,7 @@ public class Database extends Generator{
 	}
 	
 	
-	public void lock() throws SQLException
+	public void close() throws SQLException
 	{
 		  try
           {			  
@@ -193,8 +192,25 @@ public class Database extends Generator{
 	 
 	
 
-	public void pull() {
-		
+	public void pull(Bank bnk) throws SQLException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException 
+	{
+		Set<Key> keys=bnk.getBank();
+		String query = "SELECT KeyId,Title,GroupName,UserName,Password,URL,Expired FROM Bank";
+	    ResultSet rs = stat.executeQuery(query);
+		for(Key key :keys)
+		{
+			rs = stat.executeQuery(query);
+			while(rs.next())
+			{
+				key.setmId(decrypt(rs.getString("KeyId")));
+				key.setmTitle(decrypt(rs.getString("Title")));
+				key.setmGroup(decrypt(rs.getString("GroupName")));
+				key.setmUsername(decrypt(rs.getString("UserName")));
+				key.setmPassword(decrypt(rs.getString("Password")));
+				key.setmUrl(decrypt(rs.getString("URL")));
+				key.setmExpired(rs.getDate("Expired"));
+			}
+	    }
 		
 	}
 	 
