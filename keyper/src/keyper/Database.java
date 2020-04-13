@@ -36,13 +36,14 @@ public class Database extends Generator{
 	private String dbpath;
 	private Connection conn = null;
 	private static Statement stat = null;
+	
 
 	@SuppressWarnings("static-access")
 	public Database(MasterPassword masterkey) throws NoSuchPaddingException, NoSuchAlgorithmException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
 		this.cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
 		this.myKey = generate(15,true,true,true,true);
 		String driver = "org.apache.derby.jdbc.EmbeddedDriver";
-		Class.forName(driver).newInstance();
+		Class.forName(driver);
 		this.connect(masterkey);
 		this.stat=conn.createStatement();
 		this.createtables();
@@ -100,7 +101,7 @@ public class Database extends Generator{
 		         + "URL VARCHAR(255),"
 		         + "Expired DATE)";
 		         stat.execute(query);
-		String query1 = "CREATE TABLE History( "
+		String query1 = "CREATE TABLE Archive( "
 			     + "KeyId VARCHAR(255), "
 		         + "Title VARCHAR(255), "
 		         + "GroupName VARCHAR(255), "
@@ -119,10 +120,10 @@ public class Database extends Generator{
 	 
 	 
 	
-	public void connect(MasterPassword masterkey) throws SQLException
+	public void connect(MasterPassword masterkey) throws SQLException, ClassNotFoundException
 	{
 		this.dbpath="jdbc:derby:"+masterkey.getPath()+";create=true";
-		this.conn = DriverManager.getConnection(dbpath,"shem",masterkey.getPassword());
+		this.conn = DriverManager.getConnection(dbpath,"keyper",masterkey.getPassword());
 	}
 	
 	
@@ -130,7 +131,7 @@ public class Database extends Generator{
 	{
 		  try
           {			  
-              DriverManager.getConnection("jdbc:derby:;shutdown=true");
+              DriverManager.getConnection("jdbc:sqlite:;shutdown=true");
               conn.close();
 			  conn=null;
           }
