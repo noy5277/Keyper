@@ -196,5 +196,15 @@ public class Key extends Generator {
 		this.mId = mid;
 		
 	}
+
+
+	public void setmHistory(Map<Date, Key> mHistory) {
+		this.mHistory = mHistory;
+	}
+
+
+	public Map<Date, Key> getmHistory() {
+		return mHistory;
+	}
    
 }

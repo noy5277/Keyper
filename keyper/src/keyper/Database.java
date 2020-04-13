@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -108,14 +109,11 @@ public class Database extends Generator{
 		         + "Username VARCHAR(255), "
 		         + "Password VARCHAR(255), "
 			     + "URL VARCHAR(255),"
-		         + "Expired DATE)";
+		         + "Expired DATE, "
+			     + "Day INT, "
+				 + "Month INT,"
+				 + "Years INT)";
 		         stat.execute(query1);
-	    String query2 = "CREATE TABLE Dates( "
-				   + "KeyId VARCHAR(255), "
-				   + "Day INT, "
-				   + "Month INT,"
-				   + "Years INT)";
-	            stat.execute(query2); 
 	 }
 	 
 	 
@@ -168,8 +166,8 @@ public class Database extends Generator{
 				Map.Entry e=(Map.Entry)itr.next();
 				k=(Key) e.getValue();
 				d=(java.util.Date)e.getKey();
-				psInsert = conn.prepareStatement("insert into History"
-				       	+ " (KeyId,Title,GroupName,Username,Password,URL,Expired) values (?,?,?,?,?,?,?)");
+				psInsert = conn.prepareStatement("insert into Archive"
+				       	+ " (KeyId,Title,GroupName,Username,Password,URL,Expired,Day,Month,Years) values (?,?,?,?,?,?,?,?,?,?)");
 				psInsert.setString(1, encrypt(k.getmId()));
 			    psInsert.setString(2, encrypt(k.getmTitle()));
 				psInsert.setString(3, encrypt(k.getmGroup()));
@@ -177,13 +175,9 @@ public class Database extends Generator{
 				psInsert.setString(5, encrypt(k.getmPassword()));
 				psInsert.setString(6, encrypt(k.getmUrl()));
 			    psInsert.setDate(7, (Date) k.getmExpired());
-				psInsert.executeUpdate();
-				psInsert = conn.prepareStatement("insert into Dates"
-				       	+ " (KeyId,Day,Month,Years) values (?,?,?,?)");
-				psInsert.setString(1, encrypt(k.getmId()));
-				psInsert.setInt(2, d.getDate());
-				psInsert.setInt(3, d.getMonth()+1);
-				psInsert.setInt(4, d.getYear()+1900);
+				psInsert.setInt(8, d.getDate());
+				psInsert.setInt(9, d.getMonth()+1);
+				psInsert.setInt(10, d.getYear()+1900);
 				psInsert.executeUpdate();
 			}
 		  }
@@ -210,6 +204,24 @@ public class Database extends Generator{
 				key.setmPassword(decrypt(rs.getString("Password")));
 				key.setmUrl(decrypt(rs.getString("URL")));
 				key.setmExpired(rs.getDate("Expired"));
+			}
+			Map<java.util.Date, Key> History=key.getmHistory();
+			String query1 = "SELECT KeyId,Title,GroupName,UserName,Password,URL,Expired,Day,Month,Years FROM Archive";
+			ResultSet rs1 = stat.executeQuery(query1);
+			while(rs1.next())
+			{
+				@SuppressWarnings("deprecation")
+				
+				java.util.Date date=new java.util.Date(rs1.getInt("Years"),rs1.getInt("Month"),rs1.getInt("Day"));
+				Key k = new Key(null, null, null, null, null);
+				k.setmId(decrypt(rs1.getString("KeyId")));
+				k.setmTitle(decrypt(rs1.getString("Title")));
+				k.setmGroup(decrypt(rs1.getString("GroupName")));
+				k.setmUsername(decrypt(rs1.getString("UserName")));
+				k.setmPassword(decrypt(rs1.getString("Password")));
+				k.setmUrl(decrypt(rs1.getString("URL")));
+				k.setmExpired(rs1.getDate("Expired"));
+				History.put(date, k);
 			}
 	    }
 		
