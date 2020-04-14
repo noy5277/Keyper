@@ -55,15 +55,12 @@ public abstract class Autentication {
 		return getFileChecksum(input).equals(saved);
 	}
 	
-	public void getsid()
-	{
-		
-	}
-	
-	protected boolean comparesids(String sid)
+	public boolean comparesids(String saved)
 	{
 		return true;
 	}
+	
+	
 	
 	
 };

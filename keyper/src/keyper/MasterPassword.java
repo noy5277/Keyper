@@ -79,5 +79,9 @@ public class MasterPassword extends Autentication{
 			return false;
 	}
 	
+	public void createfile()
+	{
+		
+	}
 	
 }

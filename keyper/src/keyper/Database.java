@@ -13,7 +13,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -72,8 +71,15 @@ public class Database extends Generator{
 	 }
 	 
 	 
-	 
 	
+	public static String getMyKey() {
+		return myKey;
+	}
+
+	public static void setMyKey(String myKey) {
+		Database.myKey = myKey;
+	}
+
 	private String encrypt (String strToEncrypt) throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException, InvalidKeyException
 	 {
 		 
@@ -125,11 +131,12 @@ public class Database extends Generator{
 	}
 	
 	
-	public void close() throws SQLException
+	public void close(Bank bnk) throws SQLException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException
 	{
 		  try
           {			  
-              DriverManager.getConnection("jdbc:sqlite:;shutdown=true");
+              push(bnk);
+			  DriverManager.getConnection("jdbc:sqlite:;shutdown=true");
               conn.close();
 			  conn=null;
           }
@@ -226,11 +233,5 @@ public class Database extends Generator{
 	    }
 		
 	}
-	 
-	 
-
-	 
-	 
-	 
 
 }
