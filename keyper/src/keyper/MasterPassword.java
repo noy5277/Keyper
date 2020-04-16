@@ -15,6 +15,7 @@ public class MasterPassword extends Autentication{
 	private Database mDatabase;
 	private Configuration mConf;
 	private String path;
+	private String username = System.getProperty("user.name");
 	
 	public MasterPassword()throws Exception {
 		
@@ -31,6 +32,38 @@ public class MasterPassword extends Autentication{
 		this.msid = sid;
 	}
 	
+	public String getMpassword() {
+		return mpassword;
+	}
+
+	public void setMpassword(String mpassword) {
+		this.mpassword = mpassword;
+	}
+
+	public String getMkeyfile() {
+		return mkeyfile;
+	}
+
+	public void setMkeyfile(String mkeyfile) {
+		this.mkeyfile = mkeyfile;
+	}
+
+	public String getMsid() {
+		return msid;
+	}
+
+	public void setMsid(String msid) {
+		this.msid = msid;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
 	public void importFromConf() 
 	{
 		

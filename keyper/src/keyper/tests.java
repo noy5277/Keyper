@@ -18,16 +18,14 @@ import org.xml.sax.SAXException;
 public class tests extends Autentication{
 
 
-	public static void main(String[] args) throws NotSerializableException,IOException, InterruptedException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException, ParserConfigurationException, TransformerException, SAXException  {
+	public static void main(String[] args) throws Exception  {
 		Key key=new Key("gmail","email", "noy5277@gmail.com", "P@ssw0rd", "gmail.com");
-	    // MasterPassword master=new MasterPassword("c:/sqlite/db/database.db", "buhnoy5667728", null, null);
-		////master.getmDatabase().push(master.getmBank());
-		//master.getmDatabase().pull(master.getmBank());
-		//key.printhistory();
-		//master.getmDatabase().close();
+	    MasterPassword master=new MasterPassword();
+	    master.create("C:\\sqlite\\db\\database.db", "buhnoy1212434", "", "");
+	    master.getmDatabase().create(master);
+	    master.getmConf().createFile(master);
+	    master.getmBank().addkey(key);
 	    
-	    
-
 	}
 	
 

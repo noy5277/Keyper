@@ -73,7 +73,7 @@ public class Database extends Encryption{
 		this.conn = DriverManager.getConnection(dbpath,"keyper",masterkey.getPassword());
 		this.stat=conn.createStatement();
 		this.createtables();
-		privateKey();
+		
 	}
 	
 	@SuppressWarnings("static-access")
