@@ -4,14 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.xml.sax.SAXException;
+
 
 public class MasterPassword extends Autentication{
 

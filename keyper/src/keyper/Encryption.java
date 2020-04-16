@@ -24,6 +24,7 @@ public abstract class Encryption extends Generator{
 		this.cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
 	}
 	
+	@SuppressWarnings("static-access")
 	public String createPrivateKey()
 	{
 		this.myKey=generate(15, true, true, true, true);

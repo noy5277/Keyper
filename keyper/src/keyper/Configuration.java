@@ -2,18 +2,15 @@ package keyper;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import java.io.ObjectOutputStream;
+
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Scanner;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -254,6 +251,7 @@ public class Configuration extends Encryption {
 		this.mKeyFile=decrypt(bf.readLine());
 		this.mSid=decrypt(bf.readLine());
 		this.mPrivatekey=decrypt(bf.readLine());
+		bf.close();
 	}
 
 	public void importFiles() throws SAXException, IOException, ParserConfigurationException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
