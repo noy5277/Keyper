@@ -13,15 +13,32 @@ public class MasterPassword extends Autentication{
 	private String msid;
 	private Bank mBank;
 	private Database mDatabase;
+	private Configuration mConf;
 	private String path;
 	
-	public MasterPassword(String path, String password, String keyfile, String sid)throws NoSuchAlgorithmException, NoSuchPaddingException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public MasterPassword()throws Exception {
+		
+		this.mConf=new Configuration();
+		this.mBank=new Bank();
+		this.mDatabase=new Database();	
+	}
+	
+	public void create(String path, String password, String keyfile, String sid)
+	{
 		this.mpassword = password;
 		this.path=path;
 		this.mkeyfile = keyfile;
 		this.msid = sid;
-		this.mBank=new Bank();
-		this.mDatabase=new Database(this);	
+	}
+	
+	public void importFromConf() 
+	{
+		
+	}
+
+
+	public Configuration getmConf() {
+		return mConf;
 	}
 
 

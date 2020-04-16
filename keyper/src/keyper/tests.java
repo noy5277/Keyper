@@ -25,9 +25,7 @@ public class tests extends Autentication{
 		//master.getmDatabase().pull(master.getmBank());
 		//key.printhistory();
 		//master.getmDatabase().close();
-	    Configuration conf=new Configuration(null, 0, 0, 0);
-	    conf.importConf();
-	    System.out.println(conf.getmLastDbPath()+conf.getmClipBoardSleepTime());
+	    
 	    
 
 	}

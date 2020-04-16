@@ -2,7 +2,6 @@ package keyper;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.Date;
@@ -11,14 +10,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.Base64;
+
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
+
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
@@ -28,73 +26,19 @@ import java.io.IOException;
 
 
 
-public class Database extends Generator{
+public class Database extends Encryption{
 	
-	private static String myKey;
-	final Cipher cipher;
-	private static SecretKeySpec secretKey;
 	private String dbpath;
 	private Connection conn = null;
 	private static Statement stat = null;
 	
 
-	@SuppressWarnings("static-access")
-	public Database(MasterPassword masterkey) throws NoSuchPaddingException, NoSuchAlgorithmException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
-		this.cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-		this.myKey = generate(15,true,true,true,true);
+	public Database() throws NoSuchAlgorithmException, NoSuchPaddingException, ClassNotFoundException {
+		super();
 		String driver = "org.apache.derby.jdbc.EmbeddedDriver";
 		Class.forName(driver);
-		this.connect(masterkey);
-		this.stat=conn.createStatement();
-		this.createtables();
-
 	}
 	
-	 private static SecretKeySpec setKey() 
-	 {
-	        MessageDigest sha = null;
-	        try {
-	            byte[] key = myKey.getBytes("UTF-8");
-	            sha = MessageDigest.getInstance("SHA-1");
-	            key = sha.digest(key);
-	            key = Arrays.copyOf(key, 16); 
-	            secretKey = new SecretKeySpec(key, "AES");
-	        }
-	        catch (NoSuchAlgorithmException e) {
-	            e.printStackTrace();
-	        } 
-	        catch (UnsupportedEncodingException e) {
-	            e.printStackTrace();
-	        }
-			return secretKey;
-     
-	 }
-	 
-	 
-	
-	public static String getMyKey() {
-		return myKey;
-	}
-
-	public static void setMyKey(String myKey) {
-		Database.myKey = myKey;
-	}
-
-	private String encrypt (String strToEncrypt) throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException, InvalidKeyException
-	 {
-		 
-		 cipher.init(Cipher.ENCRYPT_MODE, setKey());
-		 return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
-		 
-	 }
-	 
-	 private String decrypt (String strToDecrypt) throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException, InvalidKeyException
-	 {
-		 cipher.init(Cipher.DECRYPT_MODE, setKey());
-		 return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
-	 }
-	 
-	 
 	
 	 public void createtables() throws SQLException 
 	 {
@@ -122,12 +66,22 @@ public class Database extends Generator{
 		         stat.execute(query1);
 	 }
 	 
-	 
-	
-	public void connect(MasterPassword masterkey) throws SQLException, ClassNotFoundException
+	@SuppressWarnings("static-access")
+	public void create(MasterPassword masterkey) throws SQLException
 	{
 		this.dbpath="jdbc:derby:"+masterkey.getPath()+";create=true";
 		this.conn = DriverManager.getConnection(dbpath,"keyper",masterkey.getPassword());
+		this.stat=conn.createStatement();
+		this.createtables();
+		privateKey();
+	}
+	
+	@SuppressWarnings("static-access")
+	public void connect(MasterPassword masterkey) throws SQLException, ClassNotFoundException
+	{
+		this.dbpath="jdbc:derby:"+masterkey.getPath()+";create=false";
+		this.conn = DriverManager.getConnection(dbpath,"keyper",masterkey.getPassword());
+		this.stat=conn.createStatement();
 	}
 	
 	
@@ -147,7 +101,7 @@ public class Database extends Generator{
 	}
 
 	@SuppressWarnings("deprecation")
-	public void push(Bank bnk) throws SQLException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException {
+	public void push(Bank bnk) throws SQLException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException  {
 		
 		PreparedStatement psInsert=null;
 		 Set<Key> keys=bnk.getBank();
@@ -194,7 +148,7 @@ public class Database extends Generator{
 	 
 	
 
-	public void pull(Bank bnk) throws SQLException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException 
+	public void pull(Bank bnk) throws SQLException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException  
 	{
 		Set<Key> keys=bnk.getBank();
 		String query = "SELECT KeyId,Title,GroupName,UserName,Password,URL,Expired FROM Bank";

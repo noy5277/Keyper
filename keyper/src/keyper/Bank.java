@@ -30,10 +30,6 @@ public class Bank  {
 		return bank.contains(key);
 	}
 	
-	public void sync(Bank bank)
-	{
-		
-	}
 	
 	public void search(Bank bank)
 	{
