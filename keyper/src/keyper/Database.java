@@ -31,12 +31,15 @@ public class Database extends Encryption{
 	private String dbpath;
 	private Connection conn = null;
 	private static Statement stat = null;
-	
+	private MasterPassword master;
 
-	public Database() throws NoSuchAlgorithmException, NoSuchPaddingException, ClassNotFoundException {
+	public Database(MasterPassword master) throws NoSuchAlgorithmException, NoSuchPaddingException, ClassNotFoundException, SQLException {
 		super();
 		String driver = "org.apache.derby.jdbc.EmbeddedDriver";
 		Class.forName(driver);
+		this.master=master;
+		
+		
 	}
 	
 	
@@ -67,20 +70,21 @@ public class Database extends Encryption{
 	 }
 	 
 	@SuppressWarnings("static-access")
-	public void create(MasterPassword masterkey) throws SQLException
+	public void create() throws SQLException
 	{
-		this.dbpath="jdbc:derby:"+masterkey.getPath()+";create=true";
-		this.conn = DriverManager.getConnection(dbpath,"keyper",masterkey.getPassword());
+		this.dbpath="jdbc:derby:"+master.getPath()+";create=true";
+		this.conn = DriverManager.getConnection(dbpath,"keyper",master.getPassword());
 		this.stat=conn.createStatement();
 		this.createtables();
+		createPrivateKey();
 		
 	}
 	
 	@SuppressWarnings("static-access")
-	public void connect(MasterPassword masterkey) throws SQLException, ClassNotFoundException
+	public void connect() throws SQLException, ClassNotFoundException
 	{
-		this.dbpath="jdbc:derby:"+masterkey.getPath()+";create=false";
-		this.conn = DriverManager.getConnection(dbpath,"keyper",masterkey.getPassword());
+		this.dbpath="jdbc:derby:"+master.getPath()+";create=true";
+		this.conn = DriverManager.getConnection(dbpath,"keyper",master.getPassword());
 		this.stat=conn.createStatement();
 	}
 	

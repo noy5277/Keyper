@@ -2,9 +2,16 @@ package keyper;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
 
 public class MasterPassword extends Autentication{
 
@@ -18,10 +25,9 @@ public class MasterPassword extends Autentication{
 	private String username = System.getProperty("user.name");
 	
 	public MasterPassword()throws Exception {
-		
-		this.mConf=new Configuration();
+		this.mConf=new Configuration(this);
 		this.mBank=new Bank();
-		this.mDatabase=new Database();	
+		this.mDatabase=new Database(this);
 	}
 	
 	public void create(String path, String password, String keyfile, String sid)
@@ -64,9 +70,12 @@ public class MasterPassword extends Autentication{
 		this.username = username;
 	}
 
-	public void importFromConf() 
+	public void importConfiguration() throws SAXException, IOException, ParserConfigurationException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException 
 	{
-		
+		mConf.importFiles();
+		this.mpassword=mConf.getmPassword();
+		this.mkeyfile=mConf.getmKeyFile();
+		this.msid=mConf.getmSid();
 	}
 
 
@@ -129,9 +138,6 @@ public class MasterPassword extends Autentication{
 			return false;
 	}
 	
-	public void createfile()
-	{
-		
-	}
+	
 	
 }
