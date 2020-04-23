@@ -22,6 +22,7 @@ public abstract class Encryption extends Generator{
 	
 	public Encryption() throws NoSuchAlgorithmException, NoSuchPaddingException {
 		this.cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+		this.myKey="shhhhhh!!!!!!";
 	}
 	
 	@SuppressWarnings("static-access")

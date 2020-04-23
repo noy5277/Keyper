@@ -76,7 +76,7 @@ public class Database extends Encryption{
 		this.conn = DriverManager.getConnection(dbpath,"keyper",master.getPassword());
 		this.stat=conn.createStatement();
 		this.createtables();
-		createPrivateKey();
+		//createPrivateKey();
 		
 	}
 	

@@ -103,6 +103,7 @@ public class Configuration extends Encryption {
 	}
 
 	public void setmLastDbPath(String mLastDbPath) {
+		
 		this.mLastDbPath = mLastDbPath;
 	}
 
@@ -170,7 +171,6 @@ public class Configuration extends Encryption {
 		this.mKeyFile=master.getKeyfile();
 		this.mSid=master.getSid();
 		this.mPrivatekey=getMyKey();
-		System.out.println(master.getPassword());
 		FileWriter temp= new FileWriter(mBinFile);
 		BufferedWriter bf = new BufferedWriter(temp);
 		bf.write(encrypt(this.mPassword));
@@ -229,7 +229,7 @@ public class Configuration extends Encryption {
         
         Element element1 = (Element) nodeList.item(1);
         this.mLastDbPath=getTagValue(element1);
-     
+       
         Element element3 = (Element) nodeList.item(3);
         this.mClipBoardPauseTime=Integer.parseInt(getTagValue(element3));
         
