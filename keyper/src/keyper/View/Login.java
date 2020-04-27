@@ -1,32 +1,36 @@
 package keyper.View;
-
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
-import keyper.Configuration;
 import keyper.Key;
 import keyper.MasterPassword;
-
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+
 import java.awt.Color;
 import javax.swing.JPasswordField;
 import java.awt.Font;
 import java.awt.SystemColor;
 import javax.swing.JCheckBox;
-import javax.swing.JFileChooser;
 import javax.swing.JButton;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import javax.swing.ImageIcon;
 
+
+@SuppressWarnings("serial")
 public class Login extends JFrame {
 
 	private JPanel contentPane;
@@ -34,7 +38,8 @@ public class Login extends JFrame {
 	private JTextField pathview;
 	private JLabel keyfileLabel;
 	private JTextField keyfileField;
-
+	@SuppressWarnings("unused")
+	private JCheckBox passwordcheckbox;
 
 	/**
 	 * Launch the application.
@@ -43,10 +48,10 @@ public class Login extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 					Key key=new Key("gmail","email", "noy5277@gmail.com", "P@ssw0rd", "gmail.com");
 				    MasterPassword master=new MasterPassword();
-				    Configuration conf=new Configuration(master);
-				    master.getmConf().importFiles();
+				    master.importConfiguration();
 					Login frame = new Login(master);
 					frame.setVisible(true);
 				} catch (Exception e) {
@@ -61,8 +66,9 @@ public class Login extends JFrame {
 	 * @throws IOException 
 	 * @throws NoSuchAlgorithmException 
 	 */
+	@SuppressWarnings("deprecation")
 	public Login(MasterPassword master)  {
-		setIconImage(Toolkit.getDefaultToolkit().getImage("\\\\10.0.0.138\\hd - \u05E4\u05E8\u05D5\u05D9\u05D9\u05E7\u05D8\\\u05D0\u05D9\u05D9\u05E7\u05D5\u05E0\u05D9\u05DD\\png\\secrecy-icon.png"));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(Login.class.getResource("/keyper/View/Icons/secrecy-icon.png")));
 		setTitle("Login");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 438, 243);
@@ -114,11 +120,7 @@ public class Login extends JFrame {
 		contentPane.add(filekeycheckbox);
 		
 		JButton keyfilebutton = new JButton("");
-		keyfilebutton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
-		keyfilebutton.setIcon(new ImageIcon("\\\\10.0.0.138\\hd - \u05E4\u05E8\u05D5\u05D9\u05D9\u05E7\u05D8\\\u05D0\u05D9\u05D9\u05E7\u05D5\u05E0\u05D9\u05DD\\png\\folder-blue-icon (1).png"));
+		keyfilebutton.setIcon(new ImageIcon(Login.class.getResource("/keyper/View/Icons/folder-blue-icon.png")));
 		keyfilebutton.setBounds(369, 86, 22, 20);
 		contentPane.add(keyfilebutton);
 		JFilePicker filePicker = new JFilePicker(1,keyfilebutton);
@@ -151,8 +153,78 @@ public class Login extends JFrame {
 		JButton OKButton = new JButton("OK");
 		OKButton.setBounds(231, 159, 89, 23);
 		contentPane.add(OKButton);
-		
-	}
+		OKButton.setActionCommand("login");
+		OKButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				 try {
+					okactionPerformed();
+				} catch (NoSuchAlgorithmException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvalidKeyException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalBlockSizeException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (BadPaddingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		       }
 
+			public void okactionPerformed() throws NoSuchAlgorithmException, IOException, SQLException, ClassNotFoundException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+			if(master.signin(new File(keyfileField.getText()), passwordField.getText() , passwordcheckbox.isSelected(),filekeycheckbox.isSelected() ,sidcheckbox.isSelected()))
+			{
+			   master.getmDatabase().connect();
+			   master.getmDatabase().pull(master.getmBank());
+			   BankListWindow fram=new BankListWindow(master);
+			   fram.setVisible(true);
+			   close();
+			 }
+	     	else
+	     	{
+	     		JOptionPane.showMessageDialog(null,
+	     			"Failed to load a specific file, "
+				    + "The password key is invalid ",
+				    "Login failed",
+			    JOptionPane.WARNING_MESSAGE);
+	     		System.out.println(master.getMpassword());
+		   	}
+		}
+    });
+
+		
+		switch(master.getmConf().getmLastConnectionStat())
+	    {
+	    case 1:
+	    	passwordcheckbox.setSelected(true);
+	    	break;
+	    case 2:
+	    	passwordcheckbox.setSelected(true);
+	    	filekeycheckbox.setSelected(true);
+	    	break;
+	    case 3:
+	    	sidcheckbox.setSelected(true);
+	    	break;
+	    }
+		
+   }
+
+private void close() 
+{
+	this.dispose();
+}
 	
+
 }

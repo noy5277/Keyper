@@ -70,9 +70,6 @@ public class MasterPassword extends Autentication{
 	public void importConfiguration() throws SAXException, IOException, ParserConfigurationException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException 
 	{
 		mConf.importFiles();
-		this.mpassword=mConf.getmPassword();
-		this.mkeyfile=mConf.getmKeyFile();
-		this.msid=mConf.getmSid();
 	}
 
 

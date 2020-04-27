@@ -40,46 +40,22 @@ public class Configuration extends Encryption {
 	private int mLastConnectionStat;
 	private File mXmlFile;
 	private File mBinFile;
-	private String mPrivatekey;
-	private String mPassword;
-	private String mKeyFile;
+	private MasterPassword master;
 	private String mSid;
 	private Document conf;
 	private DocumentBuilderFactory dbFactory; 
     private DocumentBuilder dBuilder;
+    private String  mPrivatekey;
     
 	public Configuration(MasterPassword master) throws NoSuchAlgorithmException, NoSuchPaddingException, ParserConfigurationException
 	{
       super();
+      this.master=master;
       this.mXmlFile=new File("C:\\Users\\"+master.getUsername()+"\\AppData\\Roaming\\Keyper\\configuration.xml");
       this.mBinFile=new File("C:\\Users\\"+master.getUsername()+"\\AppData\\Roaming\\Keyper\\ProtectedUserKey.dat");
       this.dbFactory = DocumentBuilderFactory.newInstance();
 	  this.dBuilder = dbFactory.newDocumentBuilder();
       
-	}
-
-	public String getmPrivatekey() {
-		return mPrivatekey;
-	}
-
-	public void setmPrivatekey(String mPrivatekey) {
-		this.mPrivatekey = mPrivatekey;
-	}
-
-	public String getmPassword() {
-		return mPassword;
-	}
-
-	public void setmPassword(String mPassword) {
-		this.mPassword = mPassword;
-	}
-
-	public String getmKeyFile() {
-		return mKeyFile;
-	}
-
-	public void setmKeyFile(String mKeyFile) {
-		this.mKeyFile = mKeyFile;
 	}
 
 	public String getmSid() {
@@ -167,17 +143,14 @@ public class Configuration extends Encryption {
 
 	private void createBinFile(MasterPassword master) throws IOException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException
 	{
-		this.mPassword=master.getPassword();
-		this.mKeyFile=master.getKeyfile();
-		this.mSid=master.getSid();
 		this.mPrivatekey=getMyKey();
 		FileWriter temp= new FileWriter(mBinFile);
 		BufferedWriter bf = new BufferedWriter(temp);
-		bf.write(encrypt(this.mPassword));
+		bf.write(encrypt(master.getPassword()));
 		bf.newLine();
-		bf.write(encrypt(this.mKeyFile));
+		bf.write(encrypt(master.getKeyfile()));
 		bf.newLine();
-		bf.write(encrypt(this.mSid));
+		bf.write(encrypt(master.getSid()));
 		bf.newLine();
 		bf.write(encrypt(this.mPrivatekey));
 		bf.newLine();
@@ -229,7 +202,7 @@ public class Configuration extends Encryption {
         
         Element element1 = (Element) nodeList.item(1);
         this.mLastDbPath=getTagValue(element1);
-       
+        master.setPath(this.mLastDbPath);
         Element element3 = (Element) nodeList.item(3);
         this.mClipBoardPauseTime=Integer.parseInt(getTagValue(element3));
         
@@ -247,9 +220,9 @@ public class Configuration extends Encryption {
 	{
 		FileReader temp= new FileReader(mBinFile);
 		BufferedReader bf = new BufferedReader(temp);
-		this.mPassword=decrypt(bf.readLine());
-		this.mKeyFile=decrypt(bf.readLine());
-		this.mSid=decrypt(bf.readLine());
+		master.setMpassword(decrypt(bf.readLine()));
+		master.setKeyfile(decrypt(bf.readLine()));
+		master.setMsid(bf.readLine());
 		this.mPrivatekey=decrypt(bf.readLine());
 		bf.close();
 	}
