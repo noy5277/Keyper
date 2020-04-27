@@ -203,7 +203,6 @@ public class Login extends JFrame {
 		   	}
 		}
     });
-
 		
 		switch(master.getmConf().getmLastConnectionStat())
 	    {
