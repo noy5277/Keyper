@@ -83,7 +83,7 @@ public class Database extends Encryption{
 	@SuppressWarnings("static-access")
 	public void connect() throws SQLException, ClassNotFoundException
 	{
-		this.dbpath="jdbc:derby:"+master.getPath()+";create=true";
+		this.dbpath="jdbc:derby:"+master.getPath()+";create=false";
 		this.conn = DriverManager.getConnection(dbpath,"keyper",master.getPassword());
 		this.stat=conn.createStatement();
 	}
@@ -154,14 +154,12 @@ public class Database extends Encryption{
 
 	public void pull(Bank bnk) throws SQLException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException  
 	{
-		Set<Key> keys=bnk.getBank();
 		String query = "SELECT KeyId,Title,GroupName,UserName,Password,URL,Expired FROM Bank";
 	    ResultSet rs = stat.executeQuery(query);
-		for(Key key :keys)
+		rs = stat.executeQuery(query);
+		Key key=new Key();
+		while(rs.next())
 		{
-			rs = stat.executeQuery(query);
-			while(rs.next())
-			{
 				key.setmId(decrypt(rs.getString("KeyId")));
 				key.setmTitle(decrypt(rs.getString("Title")));
 				key.setmGroup(decrypt(rs.getString("GroupName")));
@@ -169,7 +167,10 @@ public class Database extends Encryption{
 				key.setmPassword(decrypt(rs.getString("Password")));
 				key.setmUrl(decrypt(rs.getString("URL")));
 				key.setmExpired(rs.getDate("Expired"));
-			}
+				bnk.addkey(key);
+				key=new Key();
+		}	
+		
 			Map<java.util.Date, Key> History=key.getmHistory();
 			String query1 = "SELECT KeyId,Title,GroupName,UserName,Password,URL,Expired,Day,Month,Years FROM Archive";
 			ResultSet rs1 = stat.executeQuery(query1);
@@ -186,10 +187,9 @@ public class Database extends Encryption{
 				k.setmPassword(decrypt(rs1.getString("Password")));
 				k.setmUrl(decrypt(rs1.getString("URL")));
 				k.setmExpired(rs1.getDate("Expired"));
-				History.put(date, k);
+				//History.put(date, k);
 			}
-	    }
-		
+
 	}
 
 }

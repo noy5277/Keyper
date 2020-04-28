@@ -49,7 +49,7 @@ public class Login extends JFrame {
 			public void run() {
 				try {
 					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-					Key key=new Key("gmail","email", "noy5277@gmail.com", "P@ssw0rd", "gmail.com");
+					
 				    MasterPassword master=new MasterPassword();
 				    master.importConfiguration();
 					Login frame = new Login(master);
@@ -188,9 +188,10 @@ public class Login extends JFrame {
 			{
 			   master.getmDatabase().connect();
 			   master.getmDatabase().pull(master.getmBank());
+			   //master.getmDatabase().close(master.getmBank());
 			   BankListWindow fram=new BankListWindow(master);
 			   fram.setVisible(true);
-			   close();
+			   closewindow();
 			 }
 	     	else
 	     	{
@@ -220,7 +221,7 @@ public class Login extends JFrame {
 		
    }
 
-private void close() 
+private void closewindow() 
 {
 	this.dispose();
 }

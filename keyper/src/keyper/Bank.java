@@ -15,23 +15,23 @@ public class Bank  {
 		return this.bank;
 	}
 
-	void addkey(Key key)
+	public void addkey(Key key)
 	{
 		bank.add(key);
 	}
 	
-	void removekey(Key key)
+	public void removekey(Key key)
 	{
 		bank.remove(key);
 	}
 	
-	boolean isexist(Key key)
+	public boolean isexist(Key key)
 	{
 		return bank.contains(key);
 	}
 	
 	
-	public void search(Bank bank)
+	public void search(String keyid)
 	{
 		
 	}

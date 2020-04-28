@@ -1,36 +1,41 @@
 package keyper.View;
+import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.table.TableColumn;
-
 import java.awt.Toolkit;
+import java.util.HashSet;
 import java.util.Set;
-
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.JTable;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
-
-import keyper.Bank;
 import keyper.Key;
 import keyper.MasterPassword;
-
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.Font;
+import java.awt.List;
+
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 @SuppressWarnings("serial")
 public class BankListWindow extends JFrame {
 
 	private JPanel contentPane;
-	private JTable table;
-
+    private MasterPassword master;
+    private JTable table;
+    private final String[] columnNames = {"Title", "UserName","Password", "URL"};
+    private Object data[]=new Object[4];
+    private Object [][] empty= {{"","","",""}};
+    DefaultTableModel model = new DefaultTableModel(empty,columnNames);
 	/**
 	 * Launch the application.
 	 */
@@ -53,8 +58,9 @@ public class BankListWindow extends JFrame {
 	 * Create the frame.
 	 * @param master 
 	 */
-	@SuppressWarnings("serial")
+	@SuppressWarnings({ "serial", "unused" })
 	public BankListWindow(MasterPassword master) {
+		this.master=master;
 		setTitle("Keyper");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(BankListWindow.class.getResource("/keyper/View/Icons/secrecy-icon.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -63,7 +69,6 @@ public class BankListWindow extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
 		JTree tree = new JTree();
 		tree.setShowsRootHandles(true);
 		tree.setFont(new Font("Myanmar Text", Font.PLAIN, 12));
@@ -92,27 +97,72 @@ public class BankListWindow extends JFrame {
 		        if (node == null) return;
 		        Object nodeInfo = node.getUserObject();
 		        String selected=nodeInfo.toString();
-		        Set<Key> keys=master.getmBank().getBank();
-		        for(Key key: keys)
-		        {
-		        	if(selected==key.getmGroup())
-		        	addToTable();
-		        }
+		        
+		     //   if(selected=="Groups")
+		       // {
+		       // 	selectAll();
+		       // }
+		        //else
+		        //{
+		        	addColByGroup(selected);
+		       // }
 		    }
 		});
 		tree.setToolTipText("Keys Groups");
 		tree.setBounds(10, 62, 167, 355);
 		contentPane.add(tree);
-		
+
 		table = new JTable();
-		table.setFont(new Font("Myanmar Text", Font.PLAIN, 12));
-		table.setBounds(187, 63, 573, 355);
+		table.setBounds(185, 61, 575, 355);
 		contentPane.add(table);
-		TableColumn column = null;
+		
+		 JScrollPane scrollPane = new JScrollPane(table);
+		 scrollPane.setBounds(187, 62, 573, 355);
+		 getContentPane().add(scrollPane);
 	}
 
-	private void addToTable()
+	private void addColByGroup(String selected)
 	{
-		
+	  Set<Key> keys=master.getmBank().getBank();
+	  Set<Key>choosen=new HashSet();
+     for(Key key: keys)
+	 { 
+        if(selected.equals(key.getmGroup()))
+        {
+        	choosen.add(key);
+        }
+        else
+        {
+        	System.out.println("there is no such group");
+        }
+     }
+     populatetable(table,choosen);
+	}
+	
+	public void selectAll()
+	{
+		Set<Key> keys=master.getmBank().getBank();
+		 populatetable(table,keys);
+	}
+	
+	public void removeRowSelection(JTable table)
+	{
+		table.setModel(model);
+	}
+	
+	public  void populatetable(JTable table, Set<Key> keys) {
+	    removeRowSelection(table);
+	    DefaultTableModel tablemodel = (DefaultTableModel) table.getModel();
+	    tablemodel.setRowCount(0);
+	     for(Key key: keys) 
+	     {
+	    	 data[0]=key.getmTitle();
+	    	 data[1]=key.getmUsername();
+	    	 data[2]=key.getmPassword();
+	    	 data[3]=key.getmUrl();
+	    	 System.out.println(key.getmTitle());
+	    	 tablemodel.addRow(data);
+	     }
+	     table.setModel(tablemodel);
 	}
 }

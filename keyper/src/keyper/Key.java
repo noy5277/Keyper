@@ -38,6 +38,11 @@ public class Key extends Generator {
 	}
 
 
+	public Key() {
+		
+	}
+
+
 	@SuppressWarnings("unlikely-arg-type")
 	public void deletehistorykey(Date date)
     {
@@ -105,8 +110,6 @@ public class Key extends Generator {
 
 	public void setmUsername(String mUsername) {
 		this.mUsername=mUsername;
-		mHistory.put(new Date(),new Key(this.mTitle,this.mGroup, mUsername, this.mPassword, this.mUrl));
-		
 	}
 
 
@@ -118,8 +121,6 @@ public class Key extends Generator {
 
 	public void setmPassword(String mPassword) {
 		this.mPassword = mPassword;
-		this.mHistory.put(new Date(), new Key(this.mTitle,this.mGroup, this.mUsername, mPassword, this.mUrl));
-
 	}
 	
 	public void generatePassword(int lenght,boolean capital, boolean letter, boolean numbers, boolean specials) {
