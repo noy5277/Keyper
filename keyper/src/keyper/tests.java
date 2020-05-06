@@ -10,7 +10,9 @@ public class tests extends Autentication
 	    MasterPassword master=new MasterPassword();
 	    master.create("C:\\sqlite\\db\\database.db","buhnoy5667728", "","");
 	    master.getmDatabase().create();
+	    master.getmBank().addkey(key);
 	    master.getmConf().createFiles(master);
+	    master.getmDatabase().close(master.getmBank());
 	}
 	
 

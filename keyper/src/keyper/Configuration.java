@@ -54,8 +54,15 @@ public class Configuration extends Encryption {
       this.mXmlFile=new File("C:\\Users\\"+master.getUsername()+"\\AppData\\Roaming\\Keyper\\configuration.xml");
       this.mBinFile=new File("C:\\Users\\"+master.getUsername()+"\\AppData\\Roaming\\Keyper\\ProtectedUserKey.dat");
       this.dbFactory = DocumentBuilderFactory.newInstance();
+      this.mClipBoardPauseTime=12;
+	   this.mLockAfterTime=300;
+	   this.mLastConnectionStat=1;
 	  this.dBuilder = dbFactory.newDocumentBuilder();
       
+	}
+
+	public void setmClipBoardPauseTime(int mClipBoardPauseTime) {
+		this.mClipBoardPauseTime = mClipBoardPauseTime;
 	}
 
 	public String getmSid() {
@@ -117,9 +124,6 @@ public class Configuration extends Encryption {
 		try {
 		   System.out.println(createdirectory(master));
 		   this.mLastDbPath=master.getPath();
-		   this.mClipBoardPauseTime=12;
-		   this.mLockAfterTime=300;
-		   this.mLastConnectionStat=1;
 		   this.conf = dBuilder.newDocument();
            Element rootElement = conf.createElement("Configuration");
            conf.appendChild(rootElement);

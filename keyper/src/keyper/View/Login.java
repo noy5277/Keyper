@@ -9,7 +9,9 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
@@ -121,7 +123,7 @@ public class Login extends JFrame {
 		
 		JButton keyfilebutton = new JButton("");
 		keyfilebutton.setIcon(new ImageIcon(Login.class.getResource("/keyper/View/Icons/folder-blue-icon.png")));
-		keyfilebutton.setBounds(369, 86, 22, 20);
+		keyfilebutton.setBounds(369, 87, 18, 18);
 		contentPane.add(keyfilebutton);
 		JFilePicker filePicker = new JFilePicker(1,keyfilebutton);
 		keyfilebutton.addActionListener(new ActionListener() {
@@ -183,12 +185,16 @@ public class Login extends JFrame {
 				}
 		       }
 
-			public void okactionPerformed() throws NoSuchAlgorithmException, IOException, SQLException, ClassNotFoundException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+			public void okactionPerformed() throws NoSuchAlgorithmException, IOException, SQLException, ClassNotFoundException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException
+			{
+			try
+				{
 			if(master.signin(new File(keyfileField.getText()), passwordField.getText() , passwordcheckbox.isSelected(),filekeycheckbox.isSelected() ,sidcheckbox.isSelected()))
 			{
+				
 			   master.getmDatabase().connect();
 			   master.getmDatabase().pull(master.getmBank());
-			   //master.getmDatabase().close(master.getmBank());
+			   master.getmDatabase().close(master.getmBank());
 			   BankListWindow fram=new BankListWindow(master);
 			   fram.setVisible(true);
 			   closewindow();
@@ -202,7 +208,25 @@ public class Login extends JFrame {
 			    JOptionPane.WARNING_MESSAGE);
 	     		System.out.println(master.getMpassword());
 		   	}
-		}
+			}
+			catch(FileNotFoundException e)
+			{
+				JOptionPane.showMessageDialog(null,
+		     			"Failed to load a specific file, "
+		     			+"file does not exist",
+					    "Error",
+				    JOptionPane.ERROR_MESSAGE);
+			}
+			catch(SQLException e)
+			{
+				JOptionPane.showMessageDialog(null,
+						"Failed to load a specific file, "
+						+"another window is already open ",
+					    "Error",
+				    JOptionPane.ERROR_MESSAGE);
+			}
+			
+		 }
     });
 		
 		switch(master.getmConf().getmLastConnectionStat())

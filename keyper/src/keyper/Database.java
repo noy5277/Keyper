@@ -4,13 +4,13 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -53,7 +53,9 @@ public class Database extends Encryption{
 		         + "Username VARCHAR(255), "
 		         + "Password VARCHAR(255), "
 		         + "URL VARCHAR(255),"
-		         + "Expired DATE)";
+		         + "E_Day INT, "
+				 + "E_Month INT,"
+				 + "E_Years INT)";
 		         stat.execute(query);
 		String query1 = "CREATE TABLE Archive( "
 			     + "KeyId VARCHAR(255), "
@@ -62,7 +64,9 @@ public class Database extends Encryption{
 		         + "Username VARCHAR(255), "
 		         + "Password VARCHAR(255), "
 			     + "URL VARCHAR(255),"
-		         + "Expired DATE, "
+			     + "E_Day INT, "
+				 + "E_Month INT,"
+				 + "E_Years INT,"
 			     + "Day INT, "
 				 + "Month INT,"
 				 + "Years INT)";
@@ -88,9 +92,23 @@ public class Database extends Encryption{
 		this.stat=conn.createStatement();
 	}
 	
+	private void droptables()
+	{
+		String query = "DROP TABLE bank";
+		String query1 = "DROP TABLE archive";
+	    try {
+			this.stat.execute(query);
+			this.stat.execute(query1);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	public void close(Bank bnk) throws SQLException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException
 	{
+	      droptables();
+          createtables();
 		  try
           {			  
               push(bnk);
@@ -112,14 +130,16 @@ public class Database extends Encryption{
 		 for(Key key :keys)
 		 {
 	       psInsert = conn.prepareStatement("insert into Bank"
-	       	+ " (KeyId,Title,GroupName,Username,Password,URL,Expired) values (?,?,?,?,?,?,?)");
+	       	+ " (KeyId,Title,GroupName,Username,Password,URL,E_Day,E_Month,E_Years) values (?,?,?,?,?,?,?,?,?)");
 	       psInsert.setString(1, encrypt(key.getmId()));
 		   psInsert.setString(2, encrypt(key.getmTitle()));
 		   psInsert.setString(3, encrypt(key.getmGroup()));
 		   psInsert.setString(4, encrypt(key.getmUsername()));
 		   psInsert.setString(5, encrypt(key.getmPassword()));
 		   psInsert.setString(6, encrypt(key.getmUrl()));
-		   psInsert.setDate(7, (Date) key.getmExpired());
+		   psInsert.setInt(7, key.getmExpired().getDate());
+			psInsert.setInt(8, key.getmExpired().getMonth()+1);
+			psInsert.setInt(9, key.getmExpired().getYear()+1900);
 		   psInsert.executeUpdate();
 		   Set<?> entries=key.gethistory();
 			Iterator<?> itr=entries.iterator();
@@ -132,17 +152,19 @@ public class Database extends Encryption{
 				k=(Key) e.getValue();
 				d=(java.util.Date)e.getKey();
 				psInsert = conn.prepareStatement("insert into Archive"
-				       	+ " (KeyId,Title,GroupName,Username,Password,URL,Expired,Day,Month,Years) values (?,?,?,?,?,?,?,?,?,?)");
+				       	+ " (KeyId,Title,GroupName,Username,Password,URL,E_Day,E_Month,E_Years,Day,Month,Years) values (?,?,?,?,?,?,?,?,?,?,?,?)");
 				psInsert.setString(1, encrypt(k.getmId()));
 			    psInsert.setString(2, encrypt(k.getmTitle()));
 				psInsert.setString(3, encrypt(k.getmGroup()));
 				psInsert.setString(4, encrypt(k.getmUsername()));
 				psInsert.setString(5, encrypt(k.getmPassword()));
 				psInsert.setString(6, encrypt(k.getmUrl()));
-			    psInsert.setDate(7, (Date) k.getmExpired());
-				psInsert.setInt(8, d.getDate());
-				psInsert.setInt(9, d.getMonth()+1);
-				psInsert.setInt(10, d.getYear()+1900);
+				psInsert.setInt(7, k.getmExpired().getDate());
+				psInsert.setInt(8, k.getmExpired().getMonth()+1);
+				psInsert.setInt(9, k.getmExpired().getYear()+1900);
+				psInsert.setInt(10, d.getDate());
+				psInsert.setInt(11, d.getMonth()+1);
+				psInsert.setInt(12, d.getYear()+1900);
 				psInsert.executeUpdate();
 			}
 		  }
@@ -152,43 +174,52 @@ public class Database extends Encryption{
 	 
 	
 
+	@SuppressWarnings("deprecation")
 	public void pull(Bank bnk) throws SQLException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException  
 	{
-		String query = "SELECT KeyId,Title,GroupName,UserName,Password,URL,Expired FROM Bank";
+		String query = "SELECT KeyId,Title,GroupName,UserName,Password,URL,E_Day,E_Month,E_Years FROM Bank";
 	    ResultSet rs = stat.executeQuery(query);
 		rs = stat.executeQuery(query);
-		Key key=new Key();
+		Key key=null;
 		while(rs.next())
 		{
-				key.setmId(decrypt(rs.getString("KeyId")));
-				key.setmTitle(decrypt(rs.getString("Title")));
-				key.setmGroup(decrypt(rs.getString("GroupName")));
-				key.setmUsername(decrypt(rs.getString("UserName")));
-				key.setmPassword(decrypt(rs.getString("Password")));
-				key.setmUrl(decrypt(rs.getString("URL")));
-				key.setmExpired(rs.getDate("Expired"));
-				bnk.addkey(key);
-				key=new Key();
+			java.util.Date date1=new java.util.Date(rs.getInt("E_Years")-1900,rs.getInt("E_Month")-1,rs.getInt("E_Day"));
+			key=new Key();
+			key.setmId(decrypt(rs.getString("KeyId")));
+			key.setmTitle(decrypt(rs.getString("Title")));
+			key.setmGroup(decrypt(rs.getString("GroupName")));
+			key.setmUsername(decrypt(rs.getString("UserName")));
+			key.setmPassword(decrypt(rs.getString("Password")));
+			key.setmUrl(decrypt(rs.getString("URL")));
+			key.setmExpired(date1);
+			bnk.addkey(key);
 		}	
-		
-			Map<java.util.Date, Key> History=key.getmHistory();
-			String query1 = "SELECT KeyId,Title,GroupName,UserName,Password,URL,Expired,Day,Month,Years FROM Archive";
+		for(Key k: bnk.getBank())
+		{
+			
+			String query1 = "SELECT KeyId,Title,GroupName,UserName,Password,URL,E_Day,E_Month,E_Years,Day,Month,Years FROM Archive WHERE KeyId LIKE "
+			+ "'"+encrypt(k.getmId())+ "'";
 			ResultSet rs1 = stat.executeQuery(query1);
 			while(rs1.next())
 			{
 				@SuppressWarnings("deprecation")
 				
-				java.util.Date date=new java.util.Date(rs1.getInt("Years"),rs1.getInt("Month"),rs1.getInt("Day"));
-				Key k = new Key(null, null, null, null, null);
-				k.setmId(decrypt(rs1.getString("KeyId")));
-				k.setmTitle(decrypt(rs1.getString("Title")));
-				k.setmGroup(decrypt(rs1.getString("GroupName")));
-				k.setmUsername(decrypt(rs1.getString("UserName")));
-				k.setmPassword(decrypt(rs1.getString("Password")));
-				k.setmUrl(decrypt(rs1.getString("URL")));
-				k.setmExpired(rs1.getDate("Expired"));
-				//History.put(date, k);
+				Date date=new  Date(rs1.getInt("Years")-1900,rs1.getInt("Month")-1,rs1.getInt("Day"));
+				Date date2=new Date(rs1.getInt("E_Years")-1900,rs1.getInt("E_Month")-1,rs1.getInt("E_Day"));
+				Key hk = new Key();
+				Map<Date, Key> history=new HashMap<>();
+				hk.setmId(decrypt(rs1.getString("KeyId")));
+				hk.setmTitle(decrypt(rs1.getString("Title")));
+				hk.setmGroup(decrypt(rs1.getString("GroupName")));
+				hk.setmUsername(decrypt(rs1.getString("UserName")));
+				hk.setmPassword(decrypt(rs1.getString("Password")));
+				hk.setmUrl(decrypt(rs1.getString("URL")));
+				hk.setmExpired(date2);
+				history.put( date, hk);
+				k.setmHistory(history);
 			}
+		}
+			
 
 	}
 

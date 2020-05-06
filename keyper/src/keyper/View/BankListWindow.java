@@ -1,11 +1,19 @@
 package keyper.View;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.EventQueue;
+
+import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import java.awt.Toolkit;
@@ -23,7 +31,9 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.Font;
 import java.awt.List;
 
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 @SuppressWarnings("serial")
@@ -35,7 +45,9 @@ public class BankListWindow extends JFrame {
     private final String[] columnNames = {"Title", "UserName","Password", "URL"};
     private Object data[]=new Object[4];
     private Object [][] empty= {{"","","",""}};
+    
     DefaultTableModel model = new DefaultTableModel(empty,columnNames);
+    
 	/**
 	 * Launch the application.
 	 */
@@ -72,7 +84,6 @@ public class BankListWindow extends JFrame {
 		JTree tree = new JTree();
 		tree.setShowsRootHandles(true);
 		tree.setFont(new Font("Myanmar Text", Font.PLAIN, 12));
-		
 		ImageIcon leafIcon=new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/folder-key-icon.png"));
 		DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
 		if (leafIcon != null)
@@ -89,7 +100,11 @@ public class BankListWindow extends JFrame {
 				}
 			}
 		));
+		
+		
+		
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		
 		tree.addTreeSelectionListener(new TreeSelectionListener() {
 		    public void valueChanged(TreeSelectionEvent e) {
 		        DefaultMutableTreeNode node = (DefaultMutableTreeNode)
@@ -97,15 +112,9 @@ public class BankListWindow extends JFrame {
 		        if (node == null) return;
 		        Object nodeInfo = node.getUserObject();
 		        String selected=nodeInfo.toString();
+                
+		       	addColByGroup(selected);
 		        
-		     //   if(selected=="Groups")
-		       // {
-		       // 	selectAll();
-		       // }
-		        //else
-		        //{
-		        	addColByGroup(selected);
-		       // }
 		    }
 		});
 		tree.setToolTipText("Keys Groups");
@@ -121,6 +130,9 @@ public class BankListWindow extends JFrame {
 		 getContentPane().add(scrollPane);
 	}
 
+	
+	
+	
 	private void addColByGroup(String selected)
 	{
 	  Set<Key> keys=master.getmBank().getBank();
@@ -150,7 +162,8 @@ public class BankListWindow extends JFrame {
 		table.setModel(model);
 	}
 	
-	public  void populatetable(JTable table, Set<Key> keys) {
+	public  void populatetable(JTable table, Set<Key> keys)
+	{
 	    removeRowSelection(table);
 	    DefaultTableModel tablemodel = (DefaultTableModel) table.getModel();
 	    tablemodel.setRowCount(0);
@@ -158,11 +171,28 @@ public class BankListWindow extends JFrame {
 	     {
 	    	 data[0]=key.getmTitle();
 	    	 data[1]=key.getmUsername();
-	    	 data[2]=key.getmPassword();
+	    	 data[2]="**********";
 	    	 data[3]=key.getmUrl();
 	    	 System.out.println(key.getmTitle());
 	    	 tablemodel.addRow(data);
 	     }
 	     table.setModel(tablemodel);
+	     table.setRowHeight(20);
+	     table.getColumnModel().getColumn(0).setCellRenderer(new Renderer());
 	}
+}
+
+
+@SuppressWarnings("serial")
+class Renderer extends DefaultTableCellRenderer
+    {  
+	JLabel lbl=new JLabel();
+    ImageIcon[] icons= {new ImageIcon(Login.class.getResource("/keyper/View/Icons/key-go-icon.jpg"))  , new ImageIcon(Login.class.getResource("/keyper/View/Icons/key-delete-icon.jpg"))};
+	@Override
+	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row ,int column) {
+		lbl.setText((String)value);
+		lbl.setIcon(icons[0]);
+		return lbl;
+	}
+	
 }

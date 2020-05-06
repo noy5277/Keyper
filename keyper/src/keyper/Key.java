@@ -24,7 +24,8 @@ public class Key extends Generator {
     private Map<Date, Key> mHistory;
     final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
-  	public Key (String mTitle,String mGroup, String mUsername, String mPassword, String mUrl){
+  	@SuppressWarnings("deprecation")
+	public Key (String mTitle,String mGroup, String mUsername, String mPassword, String mUrl){
   		this.mId=generate(5, false, false, true, false);
   		this.mGroup=mGroup;
 		this.mTitle = mTitle;
@@ -32,7 +33,7 @@ public class Key extends Generator {
 		this.mPassword = mPassword;
 		this.mQuality = 0;
 		this.mUrl = mUrl;
-		this.mExpired = null;
+		this.mExpired = new Date(0,0,1);
 		this.mHistory = new HashMap<>();
 		mHistory.put(new Date(), this);
 	}
