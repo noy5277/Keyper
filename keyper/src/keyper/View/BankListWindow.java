@@ -17,6 +17,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import java.awt.Toolkit;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.JTree;
@@ -164,35 +165,58 @@ public class BankListWindow extends JFrame {
 	
 	public  void populatetable(JTable table, Set<Key> keys)
 	{
+		int i=0;
+		Renderer cell= new Renderer( );
 	    removeRowSelection(table);
 	    DefaultTableModel tablemodel = (DefaultTableModel) table.getModel();
 	    tablemodel.setRowCount(0);
 	     for(Key key: keys) 
 	     {
+	    	 System.out.println(key.getmExpired());
 	    	 data[0]=key.getmTitle();
 	    	 data[1]=key.getmUsername();
 	    	 data[2]="**********";
 	    	 data[3]=key.getmUrl();
 	    	 System.out.println(key.getmTitle());
 	    	 tablemodel.addRow(data);
+	    	 if(key.ExpiredStatus())
+	    	 {
+	    		 cell.setKeyIcon(1);
+	    	 } 
+	    	 cell.getTableCellRendererComponent(table,data[0], false, false, i, 0); 
+	    	 i++;
+	    	 table.getColumnModel().getColumn(0).setCellRenderer(cell);
+	    	 tablemodel=(DefaultTableModel) table.getModel();
 	     }
 	     table.setModel(tablemodel);
 	     table.setRowHeight(20);
-	     table.getColumnModel().getColumn(0).setCellRenderer(new Renderer());
-	}
 }
 
 
 @SuppressWarnings("serial")
 class Renderer extends DefaultTableCellRenderer
     {  
-	JLabel lbl=new JLabel();
-    ImageIcon[] icons= {new ImageIcon(Login.class.getResource("/keyper/View/Icons/key-go-icon.jpg"))  , new ImageIcon(Login.class.getResource("/keyper/View/Icons/key-delete-icon.jpg"))};
-	@Override
-	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row ,int column) {
-		lbl.setText((String)value);
-		lbl.setIcon(icons[0]);
-		return lbl;
-	}
 	
+      private int keyIcon;
+      Renderer()
+      {
+     	this.keyIcon=0;
+      }
+	  JLabel lbl=new JLabel();
+	  ImageIcon[] icons= {new ImageIcon(Login.class.getResource("/keyper/View/Icons/key-go-icon.jpg"))  , new ImageIcon(Login.class.getResource("/keyper/View/Icons/key-delete-icon.jpg"))};
+	  @Override
+	  public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row ,int column) {
+	  lbl.setText((String)value);
+	  lbl.setIcon(icons[keyIcon]);
+	  return lbl;
+	}
+	public int getKeyIcon() {
+		return keyIcon;
+	}
+	public void setKeyIcon(int keyIcon) {
+		this.keyIcon = keyIcon;
+	}
+	  
+   }
 }
+

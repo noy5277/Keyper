@@ -21,6 +21,7 @@ public class Key extends Generator {
 	private int mQuality;
 	private String mUrl;
 	private Date mExpired;
+	private boolean expiredCheck;
     private Map<Date, Key> mHistory;
     final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
@@ -33,7 +34,8 @@ public class Key extends Generator {
 		this.mPassword = mPassword;
 		this.mQuality = 0;
 		this.mUrl = mUrl;
-		this.mExpired = new Date(0,0,1);
+		this.mExpired = new Date();
+		this.expiredCheck=false;
 		this.mHistory = new HashMap<>();
 		mHistory.put(new Date(), this);
 	}
@@ -41,6 +43,13 @@ public class Key extends Generator {
 
 	public Key() {
 		
+	}
+
+
+	
+
+	public void setExpiredCheck(boolean expiredCheck) {
+		this.expiredCheck = expiredCheck;
 	}
 
 
@@ -154,8 +163,9 @@ public class Key extends Generator {
 		return mExpired;
 	}
 
-	public void setmExpired(Date mexpired) {
-	   this.mExpired=mexpired;
+	@SuppressWarnings("deprecation")
+	public void setmExpired(int year,int month, int date) {
+	   this.mExpired=new Date(year-1900,month-1,date);
 	}    
     
 	public int getmAutocleartime() {
@@ -208,5 +218,17 @@ public class Key extends Generator {
 	public Map<Date, Key> getmHistory() {
 		return mHistory;
 	}
-   
+	
+	public boolean ExpiredStatus()
+	{
+		if((expiredCheck)&&(mExpired.before(new Date())))
+			return true;
+		else
+			return false;
+	}
+
+
+	public boolean getExpiredCheck() {
+		return expiredCheck;
+	}
 }
