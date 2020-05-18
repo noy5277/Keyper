@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.JProgressBar;
+
 
 
 public class Key extends Generator {
@@ -172,19 +174,19 @@ public class Key extends Generator {
 		return mAutocleartime;
 	}
 
-
+	public void clearClipBoard()
+	{
+		Systemclipboard.clear();
+	}
+	
 	public void copyusername() throws InterruptedException
 	{
 		Systemclipboard.copy(this.mUsername);
-		TimeUnit.SECONDS.sleep(mAutocleartime);
-		Systemclipboard.clear();
 	}
 	
 	public void copypassword() throws InterruptedException
 	{
 		Systemclipboard.copy(this.mPassword);
-		TimeUnit.SECONDS.sleep(mAutocleartime);
-		Systemclipboard.clear();
 	}
 	
 	public void printhistory() {

@@ -99,7 +99,7 @@ public class Login extends JFrame {
 		contentPane.add(passwordField);
 		
 		JPanel panel = new JPanel();
-		panel.setBackground(new Color(173, 216, 230));
+		panel.setBackground(SystemColor.activeCaption);
 		panel.setBounds(0, 0, 422, 39);
 		contentPane.add(panel);
 		
