@@ -275,7 +275,8 @@ public class BankListWindow extends JFrame implements ActionListener {
 	    }
 	    else if(menu == menuItemEdit)
 	    {
-	    	System.out.println("menuItemEdit action!!");
+	    	KeyViewWindow keyview=new KeyViewWindow(master);
+	    	keyview.setVisible(true);
 	    }
 	    else if(menu == menuItemCopyUsername)
 	    {
