@@ -38,6 +38,8 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import javax.swing.JProgressBar;
 import java.awt.Color;
+import javax.swing.JTextField;
+import java.awt.SystemColor;
 
 @SuppressWarnings("serial")
 public class BankListWindow extends JFrame implements ActionListener {
@@ -58,6 +60,7 @@ public class BankListWindow extends JFrame implements ActionListener {
 	JMenuItem menuItemCopyPassword = new JMenuItem("Copy Password");
     
     DefaultTableModel emptyTable = new DefaultTableModel(empty,columnNames);
+    private JTextField keytextField;
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -86,7 +89,7 @@ public class BankListWindow extends JFrame implements ActionListener {
 		setTitle("Keyper");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(BankListWindow.class.getResource("/keyper/View/Icons/secrecy-icon.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 786, 497);
+		setBounds(100, 100, 786, 511);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -105,8 +108,8 @@ public class BankListWindow extends JFrame implements ActionListener {
 			new DefaultMutableTreeNode("Groups") {
 				{
 					add(new DefaultMutableTreeNode("Email"));
-					add(new DefaultMutableTreeNode("Internet"));
-					add(new DefaultMutableTreeNode("Other"));
+					add(new DefaultMutableTreeNode("Intenet"));
+					add(new DefaultMutableTreeNode("Games"));
 				}
 			}
 		));
@@ -159,12 +162,19 @@ public class BankListWindow extends JFrame implements ActionListener {
 		 popupMenu.add(menuItemCopyUsername);
 		 popupMenu.add(menuItemCopyPassword);
 		 
-		 table.addMouseListener(new TableMouseListener(table));
-		 table.setComponentPopupMenu(popupMenu);
-		 
 		 progressBar.setForeground(new Color(46, 139, 87));
-		 progressBar.setBounds(597, 428, 152, 19);
+		 progressBar.setBounds(596, 428, 152, 19);
 		 contentPane.add(progressBar);
+		 
+		 keytextField = new JTextField();
+		 keytextField.setFont(new Font("Microsoft New Tai Lue", Font.BOLD, 10));
+		 keytextField.setBackground(SystemColor.menu);
+		 keytextField.setBounds(10, 428, 580, 33);
+		 contentPane.add(keytextField);
+		 keytextField.setColumns(10);
+		 
+		 table.addMouseListener(new TableMouseListener(table,keytextField,keyMap));
+		 table.setComponentPopupMenu(popupMenu);
 		 
 	}
 	
@@ -265,6 +275,7 @@ public class BankListWindow extends JFrame implements ActionListener {
 	 {
 	    JMenuItem menu = (JMenuItem) event.getSource();
 	    int selectedRow = table.getSelectedRow();
+	    
 	    if (menu == menuItemView)
 	    {
 	    	System.out.println("menuItemView action!!");
@@ -275,7 +286,7 @@ public class BankListWindow extends JFrame implements ActionListener {
 	    }
 	    else if(menu == menuItemEdit)
 	    {
-	    	KeyViewWindow keyview=new KeyViewWindow(master);
+	    	KeyViewWindow keyview=new KeyViewWindow(keyMap.get(selectedRow));
 	    	keyview.setVisible(true);
 	    }
 	    else if(menu == menuItemCopyUsername)

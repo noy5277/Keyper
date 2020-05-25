@@ -1,5 +1,7 @@
 package keyper;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,8 +27,8 @@ public class Key extends Generator {
 	private Date mExpired;
 	private boolean expiredCheck;
     private Map<Date, Key> mHistory;
-    final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    
+  
+
   	@SuppressWarnings("deprecation")
 	public Key (String mTitle,String mGroup, String mUsername, String mPassword, String mUrl){
   		this.mId=generate(5, false, false, true, false);
@@ -163,6 +165,11 @@ public class Key extends Generator {
 
 	public Date getmExpired() {
 		return mExpired;
+	}
+	
+	public String ExpiredDateToString()
+	{
+		return mExpired.getDate()+"/"+(mExpired.getMonth()+1)+"/"+(mExpired.getYear()+1900);
 	}
 
 	@SuppressWarnings("deprecation")

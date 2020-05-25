@@ -6,6 +6,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
+import keyper.Key;
 import keyper.MasterPassword;
 
 import javax.swing.JPanel;
@@ -31,15 +32,17 @@ public class KeyViewWindow extends JFrame{
 	private JTextField titleField;
 	private JTextField userNameField;
 	private JPasswordField passwordField;
-	private JPasswordField repeatfield;
-	private JTextField textField;
+	private JPasswordField repeatField;
+	private JTextField urlField;
+	private JCheckBox expiredcheckbox;
+	private Key editkey;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MasterPassword master=new MasterPassword();
-					KeyViewWindow frmEditKey = new KeyViewWindow(master);
+					Key k=new Key();
+					KeyViewWindow frmEditKey = new KeyViewWindow(k);
 					frmEditKey.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -48,8 +51,10 @@ public class KeyViewWindow extends JFrame{
 		});
 	}
 
-	public KeyViewWindow(MasterPassword master) {
+	public KeyViewWindow(Key key) {
+		editkey=key;
 		initialize();
+		
 	}
 
 	/**
@@ -61,7 +66,7 @@ public class KeyViewWindow extends JFrame{
 		setTitle("Edit key");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(KeyViewWindow.class.getResource("/keyper/View/Icons/edit-key.png")));
 		setBounds(100, 100, 523, 446);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		getContentPane().setLayout(null);
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setFont(new Font("Tahoma", Font.PLAIN, 11));
@@ -75,59 +80,60 @@ public class KeyViewWindow extends JFrame{
 		tabbedPane.setEnabledAt(0, true);
 		properties.setLayout(null);
 		
-		JLabel titlelabel = new JLabel("Title: ");
-		titlelabel.setFont(new Font("Myanmar Text", Font.PLAIN, 13));
-		titlelabel.setBounds(20, 11, 46, 21);
-		properties.add(titlelabel);
+		JLabel titleLabel = new JLabel("Title: ");
+		titleLabel.setFont(new Font("Myanmar Text", Font.PLAIN, 13));
+		titleLabel.setBounds(20, 11, 46, 21);
+		properties.add(titleLabel);
 		
 		titleField = new JTextField();
-		titleField.setFont(new Font("Myanmar Text", Font.PLAIN, 13));
+		titleField.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		titleField.setBounds(94, 11, 346, 20);
 		properties.add(titleField);
 		titleField.setColumns(10);
 		
-		JLabel lblNewLabel_1 = new JLabel("UserName:");
-		lblNewLabel_1.setFont(new Font("Myanmar Text", Font.PLAIN, 13));
-		lblNewLabel_1.setBounds(20, 43, 74, 21);
-		properties.add(lblNewLabel_1);
+		JLabel usernameLabel = new JLabel("UserName:");
+		usernameLabel.setFont(new Font("Myanmar Text", Font.PLAIN, 13));
+		usernameLabel.setBounds(20, 43, 74, 21);
+		properties.add(usernameLabel);
 		
 		userNameField = new JTextField();
 		userNameField.setBounds(94, 42, 346, 20);
 		properties.add(userNameField);
 		userNameField.setColumns(10);
 		
-		JLabel passwordlabel = new JLabel("Password:");
-		passwordlabel.setFont(new Font("Myanmar Text", Font.PLAIN, 13));
-		passwordlabel.setBounds(20, 80, 64, 14);
-		properties.add(passwordlabel);
+		JLabel passwordLabel = new JLabel("Password:");
+		passwordLabel.setFont(new Font("Myanmar Text", Font.PLAIN, 13));
+		passwordLabel.setBounds(20, 80, 64, 14);
+		properties.add(passwordLabel);
 		
 		passwordField = new JPasswordField();
 		passwordField.setBounds(94, 75, 346, 20);
 		properties.add(passwordField);
 		
-		JLabel repeatlabel = new JLabel("Repeat:");
-		repeatlabel.setFont(new Font("Myanmar Text", Font.PLAIN, 13));
-		repeatlabel.setBounds(20, 110, 64, 14);
-		properties.add(repeatlabel);
+		JLabel repeatLabel = new JLabel("Repeat:");
+		repeatLabel.setFont(new Font("Myanmar Text", Font.PLAIN, 13));
+		repeatLabel.setBounds(20, 110, 64, 14);
+		properties.add(repeatLabel);
 		
-		repeatfield = new JPasswordField();
-		repeatfield.setBounds(94, 105, 346, 20);
-		properties.add(repeatfield);
+		repeatField = new JPasswordField();
+		repeatField.setBounds(94, 105, 346, 20);
+		properties.add(repeatField);
 		
-		JCheckBox chckbxNewCheckBox = new JCheckBox("Expired:");
-		chckbxNewCheckBox.setFont(new Font("Segoe UI Light", Font.PLAIN, 14));
-		chckbxNewCheckBox.setBounds(20, 247, 97, 23);
-		properties.add(chckbxNewCheckBox);
+		JCheckBox expiredcheckbox = new JCheckBox("Expired:");
+		expiredcheckbox.setFont(new Font("Segoe UI Light", Font.PLAIN, 14));
+		expiredcheckbox.setBounds(20, 247, 97, 23);
+		properties.add(expiredcheckbox);
+		expiredcheckbox.setSelected(editkey.getExpiredCheck());
 		
-		JLabel lblNewLabel_3 = new JLabel("URL:");
-		lblNewLabel_3.setFont(new Font("Myanmar Text", Font.PLAIN, 14));
-		lblNewLabel_3.setBounds(20, 138, 46, 20);
-		properties.add(lblNewLabel_3);
+		JLabel urlLebal = new JLabel("URL:");
+		urlLebal.setFont(new Font("Myanmar Text", Font.PLAIN, 14));
+		urlLebal.setBounds(20, 138, 46, 20);
+		properties.add(urlLebal);
 		
-		textField = new JTextField();
-		textField.setBounds(94, 136, 346, 20);
-		properties.add(textField);
-		textField.setColumns(10);
+		urlField = new JTextField();
+		urlField.setBounds(94, 136, 346, 20);
+		properties.add(urlField);
+		urlField.setColumns(10);
 		
 		JButton showpassword = new JButton("");
 		showpassword.setToolTipText("Show or Hide password");
@@ -170,6 +176,17 @@ public class KeyViewWindow extends JFrame{
 		lblNewLabel_2.setFont(new Font("Levenim MT", Font.BOLD, 18));
 		panel.add(lblNewLabel_2);
 		
+		FillFields();
 		
 	}
+	
+	private void FillFields()
+	{
+		titleField.setText(editkey.getmTitle());
+		userNameField.setText(editkey.getmUsername());
+		passwordField.setText(editkey.getmPassword());
+		repeatField.setText(editkey.getmPassword());
+		urlField.setText(editkey.getmUrl());
+	}
+	
 }
