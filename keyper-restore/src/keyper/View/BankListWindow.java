@@ -167,6 +167,7 @@ public class BankListWindow extends JFrame implements ActionListener {
 		 contentPane.add(progressBar);
 		 
 		 keytextField = new JTextField();
+		 keytextField.setEditable(false);
 		 keytextField.setFont(new Font("Microsoft New Tai Lue", Font.BOLD, 10));
 		 keytextField.setBackground(SystemColor.menu);
 		 keytextField.setBounds(10, 428, 580, 33);

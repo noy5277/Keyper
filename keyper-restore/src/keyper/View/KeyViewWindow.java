@@ -13,6 +13,10 @@ import javax.swing.JPanel;
 import java.awt.Toolkit;
 import javax.swing.JLabel;
 import java.awt.Window.Type;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Properties;
+
 import javax.swing.JButton;
 import java.awt.Panel;
 import java.awt.SystemColor;
@@ -20,13 +24,21 @@ import java.awt.Font;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
+import java.awt.Desktop.Action;
+
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
+
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
+
 import javax.swing.UIManager;
 import javax.swing.ImageIcon;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JCheckBox;
+import javax.swing.SpringLayout;
 
 public class KeyViewWindow extends JFrame{
 	private JTextField titleField;
@@ -36,6 +48,9 @@ public class KeyViewWindow extends JFrame{
 	private JTextField urlField;
 	private JCheckBox expiredcheckbox;
 	private Key editkey;
+	private SpringLayout springLayout;
+    private ActionListener action;
+    private Boolean showPasswordStat=false;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -121,7 +136,7 @@ public class KeyViewWindow extends JFrame{
 		
 		JCheckBox expiredcheckbox = new JCheckBox("Expired:");
 		expiredcheckbox.setFont(new Font("Segoe UI Light", Font.PLAIN, 14));
-		expiredcheckbox.setBounds(20, 247, 97, 23);
+		expiredcheckbox.setBounds(6, 187, 78, 23);
 		properties.add(expiredcheckbox);
 		expiredcheckbox.setSelected(editkey.getExpiredCheck());
 		
@@ -140,12 +155,35 @@ public class KeyViewWindow extends JFrame{
 		showpassword.setIcon(new ImageIcon(KeyViewWindow.class.getResource("/keyper/View/Icons/Lock-Lock-icon-16.png")));
 		showpassword.setBounds(450, 75, 24, 20);
 		properties.add(showpassword);
+		showpassword.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				if(showPasswordStat==false)
+				{
+					passwordField.setEchoChar((char)0);
+					repeatField.setEchoChar((char)0);
+					showPasswordStat=true;
+				}
+				else
+				{
+					passwordField.setEchoChar((char)9679);
+					repeatField.setEchoChar((char)9679);
+					showPasswordStat=false;
+				}
+				
+			}
+		}
+		);
+		
 		
 		JButton ganaratebutton = new JButton("");
 		ganaratebutton.setToolTipText("Generate password");
 		ganaratebutton.setIcon(new ImageIcon(KeyViewWindow.class.getResource("/keyper/View/Icons/textfield-key-icon.png")));
 		ganaratebutton.setBounds(450, 104, 24, 23);
 		properties.add(ganaratebutton);
+		
 		
 		JPanel history = new JPanel();
 		tabbedPane.addTab("History", null, history, null);
@@ -176,6 +214,24 @@ public class KeyViewWindow extends JFrame{
 		lblNewLabel_2.setFont(new Font("Levenim MT", Font.BOLD, 18));
 		panel.add(lblNewLabel_2);
 		
+		UtilDateModel model = new UtilDateModel();
+		Properties p = new Properties();
+		p.put("text.today", "Today");
+		p.put("text.month", "Month");
+		p.put("text.year", "Year");
+		JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
+		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
+		springLayout=new SpringLayout();
+		springLayout.putConstraint(SpringLayout.WEST, datePicker.getJFormattedTextField(), 0, SpringLayout.WEST, datePicker);
+		springLayout.putConstraint(SpringLayout.EAST, datePicker.getJFormattedTextField(), 157, SpringLayout.WEST, datePicker);
+		springLayout = (SpringLayout) datePicker.getLayout();
+		datePicker.getJFormattedTextField().setFont(new Font("Tahoma", Font.PLAIN, 10));
+		datePicker.setBackground(Color.WHITE);
+		datePicker.getJFormattedTextField().setBackground(Color.WHITE);
+		datePicker.getJFormattedTextField().setBounds(0, 0, 271, 23);
+		datePicker.setBounds(88, 187, 183, 23);
+		properties.add(datePicker);
+		
 		FillFields();
 		
 	}
@@ -188,5 +244,7 @@ public class KeyViewWindow extends JFrame{
 		repeatField.setText(editkey.getmPassword());
 		urlField.setText(editkey.getmUrl());
 	}
+	
+	
 	
 }
