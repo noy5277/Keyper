@@ -3,6 +3,7 @@ package keyper.View;
 import java.awt.EventQueue;
 
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
@@ -12,9 +13,12 @@ import keyper.MasterPassword;
 import javax.swing.JPanel;
 import java.awt.Toolkit;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Window.Type;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Date;
 import java.util.Properties;
 
 import javax.swing.JButton;
@@ -49,15 +53,20 @@ public class KeyViewWindow extends JFrame{
 	private JCheckBox expiredcheckbox;
 	private Key editkey;
 	private SpringLayout springLayout;
-    private ActionListener action;
+    private ActionListener showPasswordAction;
+    private ActionListener okAction;
     private Boolean showPasswordStat=false;
-
+    private JDatePickerImpl datePicker;
+    private UtilDateModel model;
+    private static KeyViewWindow frmEditKey;
+    private Date selectedDate;
+    
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					Key k=new Key();
-					KeyViewWindow frmEditKey = new KeyViewWindow(k);
+					frmEditKey = new KeyViewWindow(k);
 					frmEditKey.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -68,6 +77,9 @@ public class KeyViewWindow extends JFrame{
 
 	public KeyViewWindow(Key key) {
 		editkey=key;
+		selectedDate=new Date();
+		model = new UtilDateModel();
+		expiredcheckbox = new JCheckBox("Expired:");
 		initialize();
 		
 	}
@@ -76,6 +88,8 @@ public class KeyViewWindow extends JFrame{
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		
+		InitActionListeners();
 		
 		setAlwaysOnTop(true);
 		setTitle("Edit key");
@@ -134,11 +148,10 @@ public class KeyViewWindow extends JFrame{
 		repeatField.setBounds(94, 105, 346, 20);
 		properties.add(repeatField);
 		
-		JCheckBox expiredcheckbox = new JCheckBox("Expired:");
+		
 		expiredcheckbox.setFont(new Font("Segoe UI Light", Font.PLAIN, 14));
 		expiredcheckbox.setBounds(6, 187, 78, 23);
 		properties.add(expiredcheckbox);
-		expiredcheckbox.setSelected(editkey.getExpiredCheck());
 		
 		JLabel urlLebal = new JLabel("URL:");
 		urlLebal.setFont(new Font("Myanmar Text", Font.PLAIN, 14));
@@ -155,27 +168,7 @@ public class KeyViewWindow extends JFrame{
 		showpassword.setIcon(new ImageIcon(KeyViewWindow.class.getResource("/keyper/View/Icons/Lock-Lock-icon-16.png")));
 		showpassword.setBounds(450, 75, 24, 20);
 		properties.add(showpassword);
-		showpassword.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				if(showPasswordStat==false)
-				{
-					passwordField.setEchoChar((char)0);
-					repeatField.setEchoChar((char)0);
-					showPasswordStat=true;
-				}
-				else
-				{
-					passwordField.setEchoChar((char)9679);
-					repeatField.setEchoChar((char)9679);
-					showPasswordStat=false;
-				}
-				
-			}
-		}
-		);
+		showpassword.addActionListener(showPasswordAction);
 		
 		
 		JButton ganaratebutton = new JButton("");
@@ -198,6 +191,8 @@ public class KeyViewWindow extends JFrame{
 		Okbutton.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		Okbutton.setBounds(314, 374, 89, 23);
 		getContentPane().add(Okbutton);
+		Okbutton.addActionListener(okAction);
+		
 		
 		JButton cancelbutton = new JButton("Cancel");
 		cancelbutton.setBounds(413, 374, 89, 23);
@@ -214,7 +209,7 @@ public class KeyViewWindow extends JFrame{
 		lblNewLabel_2.setFont(new Font("Levenim MT", Font.BOLD, 18));
 		panel.add(lblNewLabel_2);
 		
-		UtilDateModel model = new UtilDateModel();
+		
 		Properties p = new Properties();
 		p.put("text.today", "Today");
 		p.put("text.month", "Month");
@@ -234,6 +229,69 @@ public class KeyViewWindow extends JFrame{
 		
 		FillFields();
 		
+		
+	}
+	
+	
+	
+	private void InitActionListeners()
+	{
+		showPasswordAction=new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				if(showPasswordStat==false)
+				{
+					passwordField.setEchoChar((char)0);
+					repeatField.setEchoChar((char)0);
+					showPasswordStat=true;
+				}
+				else
+				{
+					passwordField.setEchoChar((char)9679);
+					repeatField.setEchoChar((char)9679);
+					showPasswordStat=false;
+     			}
+			}
+		};
+		
+		okAction=new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+			    
+				editkey.setmUsername(userNameField.getText());
+				editkey.setmTitle(titleField.getText());
+				String pass=passwordField.getText();
+				String rep=repeatField.getText();
+				editkey.setmUrl(urlField.getText());
+				editkey.setExpiredCheck(expiredcheckbox.isSelected());
+				selectedDate =  model.getValue();
+				editkey.setmExpired(selectedDate.getYear()+1900, selectedDate.getMonth()+1,selectedDate.getDate());
+				if(pass.equals(rep))
+				{
+					editkey.setmPassword(pass.toString());
+					closewindow();
+				}
+				else
+				{
+					final JDialog dialog = new JDialog();
+					dialog.setAlwaysOnTop(true);   
+					JOptionPane.showMessageDialog(dialog,
+			     			"The passwords are not equals, "
+			     			+"please try again",
+						    "Error",
+					    JOptionPane.WARNING_MESSAGE);
+				}
+				
+				
+				
+			}
+			
+		};
+		
 	}
 	
 	private void FillFields()
@@ -243,8 +301,14 @@ public class KeyViewWindow extends JFrame{
 		passwordField.setText(editkey.getmPassword());
 		repeatField.setText(editkey.getmPassword());
 		urlField.setText(editkey.getmUrl());
+		model.setValue(editkey.getmExpired());
+		expiredcheckbox.setSelected(editkey.getExpiredCheck());
 	}
 	
+	private void closewindow()
+	{
+		this.dispose();
+	}
 	
 	
 }
