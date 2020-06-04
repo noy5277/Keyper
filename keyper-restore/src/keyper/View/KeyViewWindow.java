@@ -284,10 +284,7 @@ public class KeyViewWindow extends JFrame{
 			     			+"please try again",
 						    "Error",
 					    JOptionPane.WARNING_MESSAGE);
-				}
-				
-				
-				
+				}				
 			}
 			
 		};
