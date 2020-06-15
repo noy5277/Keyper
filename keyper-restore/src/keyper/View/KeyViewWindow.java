@@ -55,6 +55,7 @@ public class KeyViewWindow extends JFrame{
 	private SpringLayout springLayout;
     private ActionListener showPasswordAction;
     private ActionListener okAction;
+    private ActionListener generateAction;
     private Boolean showPasswordStat=false;
     private JDatePickerImpl datePicker;
     private UtilDateModel model;
@@ -171,11 +172,12 @@ public class KeyViewWindow extends JFrame{
 		showpassword.addActionListener(showPasswordAction);
 		
 		
-		JButton ganaratebutton = new JButton("");
-		ganaratebutton.setToolTipText("Generate password");
-		ganaratebutton.setIcon(new ImageIcon(KeyViewWindow.class.getResource("/keyper/View/Icons/textfield-key-icon.png")));
-		ganaratebutton.setBounds(450, 104, 24, 23);
-		properties.add(ganaratebutton);
+		JButton generatebutton = new JButton("");
+		generatebutton.setToolTipText("Generate password");
+		generatebutton.setIcon(new ImageIcon(KeyViewWindow.class.getResource("/keyper/View/Icons/textfield-key-icon.png")));
+		generatebutton.setBounds(450, 104, 24, 23);
+		properties.add(generatebutton);
+		generatebutton.addActionListener(generateAction);
 		
 		
 		JPanel history = new JPanel();
@@ -287,6 +289,18 @@ public class KeyViewWindow extends JFrame{
 				}				
 			}
 			
+		};
+		
+		generateAction=new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				GenerateWindow generate=new GenerateWindow(editkey);
+				generate.setVisible(true);
+				generate.setAlwaysOnTop(true);
+				
+			}
 		};
 		
 	}
