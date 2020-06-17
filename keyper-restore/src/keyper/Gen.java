@@ -12,6 +12,7 @@ public interface Gen {
 	
 	
 	public static String generate(int lenght,boolean capital, boolean letter, boolean numbers, boolean specials) {
+		StringBuilder password=new StringBuilder();
 		int ch=0;
 	    int index=0;
 		if(capital)

@@ -1,14 +1,15 @@
 package keyper.View;
 
-import java.awt.BorderLayout;
+
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
 
 import keyper.Gen;
-import keyper.Generator;
+
 import keyper.Key;
 
 import javax.swing.JSpinner;
@@ -21,8 +22,9 @@ import javax.swing.JTextField;
 import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.ImageIcon;
+
 import javax.swing.SpinnerNumberModel;
+
 
 public class GenerateWindow extends JFrame implements Gen {
 
@@ -30,13 +32,16 @@ public class GenerateWindow extends JFrame implements Gen {
 	private JTextField ResultField;
 	private JSpinner numOfCharField;
 	private ActionListener generateAction;
+    private ActionListener cancelAction;
+    private ActionListener okAction;
 	private JCheckBox upperCasechckbx;
 	private JCheckBox lowerCasechckbx;
 	private JCheckBox specialsChckbx;
 	private JCheckBox numChckbx;
 	private String password;
 	private SpinnerNumberModel numModel;
-	private Key editkey;
+	private JPasswordField repass;
+	private JPasswordField rerep;
 
 	/**
 	 * Launch the application.
@@ -45,8 +50,9 @@ public class GenerateWindow extends JFrame implements Gen {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Key k=new Key();
-					GenerateWindow frame = new GenerateWindow(k);
+					JPasswordField pass = null;
+					JPasswordField rep = null;
+					GenerateWindow frame = new GenerateWindow(pass,rep);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -58,10 +64,10 @@ public class GenerateWindow extends JFrame implements Gen {
 	/**
 	 * Create the frame.
 	 */
-	public GenerateWindow(Key key) {
-		
+	public GenerateWindow(JPasswordField pass, JPasswordField rep) {
+		repass=pass;
+		rerep=rep;
 		InitActionListeners();
-		editkey=key;
 		setIconImage(Toolkit.getDefaultToolkit().getImage(GenerateWindow.class.getResource("/keyper/View/Icons/textfield-key-icon.png")));
 		setTitle("Generate Password");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -96,10 +102,12 @@ public class GenerateWindow extends JFrame implements Gen {
 		JButton okButton = new JButton("OK");
 		okButton.setBounds(244, 227, 89, 23);
 		contentPane.add(okButton);
+		okButton.addActionListener(okAction);
 		
 		JButton cancelButton = new JButton("Cancel");
 		cancelButton.setBounds(335, 227, 89, 23);
 		contentPane.add(cancelButton);
+		cancelButton.addActionListener(cancelAction);
 		
 		upperCasechckbx = new JCheckBox("Upper-case {A,B,C,....,Y,Z}");
 		upperCasechckbx.setBounds(10, 51, 163, 23);
@@ -130,16 +138,37 @@ public class GenerateWindow extends JFrame implements Gen {
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{ 
-				password=" ";
-				System.out.println(password);
 				password=Gen.generate((int)numOfCharField.getModel().getValue(),upperCasechckbx.isSelected(), lowerCasechckbx.isSelected(),numChckbx.isSelected(),specialsChckbx.isSelected());
 				ResultField.setText(password);
-				System.out.println(password);
 			}
 		};
 		
+		cancelAction=new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{ 
+				closewindow();
+			}
+			
+		};
 		
+		okAction=new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{ 
+				repass.setText(password);
+				rerep.setText(password);
+				closewindow();
+			}
+			
+		};
 		
-		
+	}
+	
+	private void closewindow()
+	{
+		this.dispose();
 	}
 }

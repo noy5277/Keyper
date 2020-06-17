@@ -56,6 +56,7 @@ public class KeyViewWindow extends JFrame{
     private ActionListener showPasswordAction;
     private ActionListener okAction;
     private ActionListener generateAction;
+    private ActionListener cancelAction;
     private Boolean showPasswordStat=false;
     private JDatePickerImpl datePicker;
     private UtilDateModel model;
@@ -199,6 +200,7 @@ public class KeyViewWindow extends JFrame{
 		JButton cancelbutton = new JButton("Cancel");
 		cancelbutton.setBounds(413, 374, 89, 23);
 		getContentPane().add(cancelbutton);
+		cancelbutton.addActionListener(cancelAction);
 		
 		Panel panel = new Panel();
 		panel.setForeground(SystemColor.text);
@@ -286,7 +288,7 @@ public class KeyViewWindow extends JFrame{
 			     			+"please try again",
 						    "Error",
 					    JOptionPane.WARNING_MESSAGE);
-				}				
+				}
 			}
 			
 		};
@@ -296,10 +298,19 @@ public class KeyViewWindow extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				GenerateWindow generate=new GenerateWindow(editkey);
+				GenerateWindow generate=new GenerateWindow(passwordField, repeatField);
 				generate.setVisible(true);
 				generate.setAlwaysOnTop(true);
 				
+			}
+		};
+		
+		cancelAction=new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				closewindow();
 			}
 		};
 		

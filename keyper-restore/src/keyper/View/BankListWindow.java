@@ -81,6 +81,11 @@ public class BankListWindow extends JFrame implements ActionListener {
 	 * @param master 
 	 */
 	@SuppressWarnings({ "unused" })
+	
+	public BankListWindow()
+	{
+		
+	}
 	public BankListWindow(MasterPassword master) {
 		this.master=master;
 		this.keyMap=new HashMap <Integer ,Key>();
@@ -328,6 +333,10 @@ public class BankListWindow extends JFrame implements ActionListener {
 		 thread.start();
 	 }
 	 
+	 public void RefreshTable(String group)
+	 {
+		 addColByGroup(group);	
+	 }
 	
 }
 

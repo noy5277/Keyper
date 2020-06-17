@@ -139,7 +139,12 @@ public class Key extends Generator {
 	
 	public void generatePassword(int lenght,boolean capital, boolean letter, boolean numbers, boolean specials) {
 		this.mPassword=generate(lenght, capital, letter, numbers, specials);
-		this.mHistory.put(new Date(), new Key(this.mTitle,this.mGroup, this.mUsername, this.mPassword, this.mUrl));
+		
+	}
+	
+	public void InsertToHistory()
+	{
+		this.mHistory.put(new Date(), this);
 	}
 
 

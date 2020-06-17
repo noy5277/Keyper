@@ -245,10 +245,10 @@ public class Login extends JFrame {
 		
    }
 
-private void closewindow() 
-{
+ private void closewindow() 
+ {
 	this.dispose();
-}
+ }
 	
 
 }
