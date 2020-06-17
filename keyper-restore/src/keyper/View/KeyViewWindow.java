@@ -41,8 +41,14 @@ import javax.swing.UIManager;
 import javax.swing.ImageIcon;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
 import javax.swing.JCheckBox;
 import javax.swing.SpringLayout;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.border.CompoundBorder;
+import javax.swing.ListSelectionModel;
+import javax.swing.border.MatteBorder;
 
 public class KeyViewWindow extends JFrame{
 	private JTextField titleField;
@@ -62,7 +68,11 @@ public class KeyViewWindow extends JFrame{
     private UtilDateModel model;
     private static KeyViewWindow frmEditKey;
     private Date selectedDate;
-    
+    private JTable table;
+    private Object data[]=new Object[3];
+    private Object [][] empty= {{"","",""}};
+    private final String[] columnNames = {"Version", "Title","Username"};
+    DefaultTableModel emptyTable = new DefaultTableModel(empty,columnNames);
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -92,6 +102,7 @@ public class KeyViewWindow extends JFrame{
 	private void initialize() {
 		
 		InitActionListeners();
+		
 		
 		setAlwaysOnTop(true);
 		setTitle("Edit key");
@@ -182,13 +193,43 @@ public class KeyViewWindow extends JFrame{
 		
 		
 		JPanel history = new JPanel();
+		history.setBorder(new CompoundBorder());
 		tabbedPane.addTab("History", null, history, null);
 		tabbedPane.setEnabledAt(1, true);
 		history.setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("New label");
-		lblNewLabel.setBounds(10, 36, 46, 14);
-		history.add(lblNewLabel);
+		
+		JButton restoreBtn = new JButton("Restore");
+		restoreBtn.setBounds(403, 257, 89, 23);
+		history.add(restoreBtn);
+		
+		JButton Viewbtn = new JButton("View");
+		Viewbtn.setBounds(10, 257, 89, 23);
+		history.add(Viewbtn);
+		
+		JButton deletebtn = new JButton("Delete");
+		deletebtn.setBounds(109, 257, 89, 23);
+		history.add(deletebtn);
+		
+		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane.setEnabled(false);
+		scrollPane.setBounds(10, 11, 482, 235);
+		history.add(scrollPane);
+		
+		
+		table = new JTable(){
+			   @Override
+			   public boolean isCellEditable(int row, int column) {
+			    return false;
+			   }
+		};
+		table.setFillsViewportHeight(true);
+		table.setColumnSelectionAllowed(true);
+		scrollPane.setViewportView(table);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		table.setSurrendersFocusOnKeystroke(true);
+		table.setRowHeight(20);
+		InitTable();
 		
 		JButton Okbutton = new JButton("OK");
 		Okbutton.setFont(new Font("Tahoma", Font.PLAIN, 11));
@@ -235,6 +276,18 @@ public class KeyViewWindow extends JFrame{
 		
 		
 	}
+	
+	private void InitTable()
+	{
+		table.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"Version", "Title", "Username"
+			}
+		));
+	}
+	
 	
 	
 	
@@ -331,6 +384,4 @@ public class KeyViewWindow extends JFrame{
 	{
 		this.dispose();
 	}
-	
-	
 }
