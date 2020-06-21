@@ -19,7 +19,9 @@ import java.awt.Window.Type;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -61,10 +63,14 @@ public class KeyViewWindow extends JFrame{
 	private JCheckBox expiredcheckbox;
 	private Key editkey;
 	private SpringLayout springLayout;
+	private Map<Integer ,Date> keyMap;
+	private ActionListener viewHistoryKeyAction;
+	private ActionListener deleteHistoryKeyAction;
     private ActionListener showPasswordAction;
     private ActionListener okAction;
     private ActionListener generateAction;
     private ActionListener cancelAction;
+    private ActionListener restoreAction;
     private Boolean showPasswordStat=false;
     private JDatePickerImpl datePicker;
     private UtilDateModel model;
@@ -105,6 +111,7 @@ public class KeyViewWindow extends JFrame{
 		
 		InitActionListeners();
 		
+		keyMap=new HashMap<>();
 		
 		setAlwaysOnTop(true);
 		setTitle("Edit key");
@@ -204,14 +211,17 @@ public class KeyViewWindow extends JFrame{
 		JButton restoreBtn = new JButton("Restore");
 		restoreBtn.setBounds(403, 257, 89, 23);
 		history.add(restoreBtn);
+		restoreBtn.addActionListener(restoreAction);
 		
 		JButton Viewbtn = new JButton("View");
 		Viewbtn.setBounds(10, 257, 89, 23);
 		history.add(Viewbtn);
+		Viewbtn.addActionListener(viewHistoryKeyAction);
 		
 		JButton deletebtn = new JButton("Delete");
 		deletebtn.setBounds(109, 257, 89, 23);
 		history.add(deletebtn);
+		deletebtn.addActionListener(deleteHistoryKeyAction);
 		
 		JScrollPane scrollPane = new JScrollPane(table);
 		scrollPane.setEnabled(false);
@@ -293,15 +303,16 @@ public class KeyViewWindow extends JFrame{
 	
 	private void fillHistoryTable()
 	{
+		int i=0;
 		DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
-		Set <Date> versions=new HashSet<Date>();
-		versions=editkey.gethistorydates();
-		for(Date date:versions)
+		for(Date date:editkey.gethistorydates())
 		{
+			keyMap.put(i,date);
 			data[0]=date;
 			data[1]=editkey.getmHistory().get(date).getmTitle();
 			data[2]=editkey.getmHistory().get(date).getmUsername();
 			tableModel.addRow(data);
+			i++;
 		}
 		table.setModel(tableModel);
 	    table.setRowHeight(20);
@@ -383,6 +394,37 @@ public class KeyViewWindow extends JFrame{
 			}
 		};
 		
+		restoreAction= new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				int selectedRow = table.getSelectedRow();
+				System.out.println(selectedRow);
+				editkey=editkey.getmHistory().get(keyMap.get(selectedRow));
+			}
+		};
+		
+		deleteHistoryKeyAction=new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				int selectedRow = table.getSelectedRow();
+				editkey.getmHistory().remove(keyMap.get(selectedRow));
+				keyMap.remove(selectedRow);
+				fillHistoryTable();
+			}
+		};
+		
+		viewHistoryKeyAction=new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				
+			}
+		};
 	}
 	
 	private void FillFields()
