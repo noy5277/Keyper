@@ -19,7 +19,9 @@ import java.awt.Window.Type;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.swing.JButton;
 import java.awt.Panel;
@@ -224,12 +226,12 @@ public class KeyViewWindow extends JFrame{
 			   }
 		};
 		table.setFillsViewportHeight(true);
-		table.setColumnSelectionAllowed(true);
 		scrollPane.setViewportView(table);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setSurrendersFocusOnKeystroke(true);
 		table.setRowHeight(20);
 		InitTable();
+		fillHistoryTable();
 		
 		JButton Okbutton = new JButton("OK");
 		Okbutton.setFont(new Font("Tahoma", Font.PLAIN, 11));
@@ -289,7 +291,21 @@ public class KeyViewWindow extends JFrame{
 	}
 	
 	
-	
+	private void fillHistoryTable()
+	{
+		DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+		Set <Date> versions=new HashSet<Date>();
+		versions=editkey.gethistorydates();
+		for(Date date:versions)
+		{
+			data[0]=date;
+			data[1]=editkey.getmHistory().get(date).getmTitle();
+			data[2]=editkey.getmHistory().get(date).getmUsername();
+			tableModel.addRow(data);
+		}
+		table.setModel(tableModel);
+	    table.setRowHeight(20);
+	}
 	
 	private void InitActionListeners()
 	{
