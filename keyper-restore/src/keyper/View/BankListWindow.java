@@ -49,6 +49,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
+import javax.swing.JMenu;
 
 @SuppressWarnings("serial")
 public class BankListWindow extends JFrame implements ActionListener {
@@ -71,7 +72,6 @@ public class BankListWindow extends JFrame implements ActionListener {
     DefaultTableModel emptyTable = new DefaultTableModel(empty,columnNames);
     private JTextField keytextField;
     private JMenuBar menuBar;
-    private JPanel panel;
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -147,12 +147,12 @@ public class BankListWindow extends JFrame implements ActionListener {
 		table.setShowVerticalLines(false);
 		table.setSurrendersFocusOnKeystroke(true);
 		table.setFillsViewportHeight(true);
-		table.setBounds(185, 61, 575, 355);
+		table.setBounds(10, 11, 575, 355);
 		contentPane.add(table);
 		
-		 JScrollPane scrollPane = new JScrollPane(table);
-		 scrollPane.setBounds(187, 62, 573, 355);
-		 getContentPane().add(scrollPane);
+		 JScrollPane settingsmenu = new JScrollPane(table);
+		 settingsmenu.setBounds(187, 62, 573, 355);
+		 getContentPane().add(settingsmenu);
 		
 		 menuItemView.addActionListener(this);
 		 menuItemDelete.addActionListener(this);
@@ -185,16 +185,62 @@ public class BankListWindow extends JFrame implements ActionListener {
 		 menuBar.setBounds(0, 0, 770, 33);
 		 contentPane.add(menuBar);
 		 
-		 panel = new JPanel();
-		 panel.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		 panel.setBounds(0, 32, 770, 26);
-		 contentPane.add(panel);
-		 panel.setLayout(null);
+		 JMenu filemenu = new JMenu("File");
+		 menuBar.add(filemenu);
 		 
-		 JButton btnNewButton = new JButton("");
-		 btnNewButton.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/Lock-Lock-icon-16.png")));
-		 btnNewButton.setBounds(10, 0, 26, 23);
-		 panel.add(btnNewButton);
+		 JMenuItem newDatabaseMenuItem = new JMenuItem("New Database");
+		 newDatabaseMenuItem.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/New-Database-icon16.png")));
+		 filemenu.add(newDatabaseMenuItem);
+		 
+		 JMenu groupsmenu = new JMenu("Groups");
+		 menuBar.add(groupsmenu);
+		 
+		 JMenu setingsmenu = new JMenu("Settings");
+		 setingsmenu.setIcon(null);
+		 menuBar.add(setingsmenu);
+		 
+		 JMenu actionMenu = new JMenu("Actions");
+		 menuBar.add(actionMenu);
+		 
+		 JMenu aboutMenu = new JMenu("About");
+		 menuBar.add(aboutMenu);
+		 
+		 JButton refreseBtn = new JButton("");
+		 refreseBtn.setToolTipText("Refresh");
+		 refreseBtn.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/refresh.png")));
+		 refreseBtn.setBounds(187, 35, 27, 27);
+		 contentPane.add(refreseBtn);
+		 
+		 JButton saveBtn = new JButton("");
+		 saveBtn.setToolTipText("Save");
+		 saveBtn.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/save.png")));
+		 saveBtn.setBounds(217, 35, 27, 27);
+		 contentPane.add(saveBtn);
+		 
+		 JButton addkeyBtn = new JButton("");
+		 addkeyBtn.setToolTipText("Add key");
+		 addkeyBtn.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/addkey.png")));
+		 addkeyBtn.setSelectedIcon(null);
+		 addkeyBtn.setBounds(157, 35, 27, 27);
+		 contentPane.add(addkeyBtn);
+		 
+		 JButton deleteKeyBtn = new JButton("");
+		 deleteKeyBtn.setToolTipText("Delete key");
+		 deleteKeyBtn.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/deletekey.png")));
+		 deleteKeyBtn.setBounds(126, 35, 27, 27);
+		 contentPane.add(deleteKeyBtn);
+		 
+		 JButton copyUsernameBtn = new JButton("");
+		 copyUsernameBtn.setToolTipText("Copy username");
+		 copyUsernameBtn.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/copyusername.png")));
+		 copyUsernameBtn.setBounds(95, 35, 27, 27);
+		 contentPane.add(copyUsernameBtn);
+		 
+		 JButton copyPasswordBtn = new JButton("");
+		 copyPasswordBtn.setToolTipText("Copy password");
+		 copyPasswordBtn.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/copypassword.png")));
+		 copyPasswordBtn.setBounds(65, 35, 27, 27);
+		 contentPane.add(copyPasswordBtn);
 		 
 	}
 	
