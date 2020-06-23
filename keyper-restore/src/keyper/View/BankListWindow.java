@@ -40,6 +40,15 @@ import javax.swing.JProgressBar;
 import java.awt.Color;
 import javax.swing.JTextField;
 import java.awt.SystemColor;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JMenuBar;
+import javax.swing.border.MatteBorder;
+import javax.swing.border.SoftBevelBorder;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.JButton;
+import javax.swing.SwingConstants;
 
 @SuppressWarnings("serial")
 public class BankListWindow extends JFrame implements ActionListener {
@@ -61,6 +70,8 @@ public class BankListWindow extends JFrame implements ActionListener {
     
     DefaultTableModel emptyTable = new DefaultTableModel(empty,columnNames);
     private JTextField keytextField;
+    private JMenuBar menuBar;
+    private JPanel panel;
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -76,16 +87,7 @@ public class BankListWindow extends JFrame implements ActionListener {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 * @param master 
-	 */
-	@SuppressWarnings({ "unused" })
 	
-	public BankListWindow()
-	{
-		
-	}
 	public BankListWindow(MasterPassword master) {
 		this.master=master;
 		this.keyMap=new HashMap <Integer ,Key>();
@@ -100,6 +102,11 @@ public class BankListWindow extends JFrame implements ActionListener {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		JTree tree = new JTree();
+		DefaultMutableTreeNode games=new DefaultMutableTreeNode("Games");
+		DefaultMutableTreeNode internet=new DefaultMutableTreeNode("Intenet");
+		DefaultMutableTreeNode email=new DefaultMutableTreeNode("Email");
+		DefaultMutableTreeNode group=new DefaultMutableTreeNode("Groups");
+		DefaultTreeModel grouptree=new DefaultTreeModel(group);
 		tree.setShowsRootHandles(true);
 		tree.setFont(new Font("Myanmar Text", Font.PLAIN, 12));
 		ImageIcon leafIcon=new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/folder-key-icon.png"));
@@ -109,18 +116,10 @@ public class BankListWindow extends JFrame implements ActionListener {
 		    renderer.setLeafIcon(leafIcon);
 		    tree.setCellRenderer(renderer);
 		}
-		tree.setModel(new DefaultTreeModel(
-			new DefaultMutableTreeNode("Groups") {
-				{
-					add(new DefaultMutableTreeNode("Email"));
-					add(new DefaultMutableTreeNode("Intenet"));
-					add(new DefaultMutableTreeNode("Games"));
-				}
-			}
-		));
-		
-		
-		
+		group.add(email);
+		group.add(internet);
+		group.add(games);
+		tree.setModel(grouptree);
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		
 		tree.addTreeSelectionListener(new TreeSelectionListener() {
@@ -181,6 +180,21 @@ public class BankListWindow extends JFrame implements ActionListener {
 		 
 		 table.addMouseListener(new TableMouseListener(table,keytextField,keyMap));
 		 table.setComponentPopupMenu(popupMenu);
+		 
+		 menuBar = new JMenuBar();
+		 menuBar.setBounds(0, 0, 770, 33);
+		 contentPane.add(menuBar);
+		 
+		 panel = new JPanel();
+		 panel.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		 panel.setBounds(0, 32, 770, 26);
+		 contentPane.add(panel);
+		 panel.setLayout(null);
+		 
+		 JButton btnNewButton = new JButton("");
+		 btnNewButton.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/Lock-Lock-icon-16.png")));
+		 btnNewButton.setBounds(10, 0, 26, 23);
+		 panel.add(btnNewButton);
 		 
 	}
 	
@@ -337,5 +351,4 @@ public class BankListWindow extends JFrame implements ActionListener {
 	 {
 		 addColByGroup(group);	
 	 }
-	
 }
