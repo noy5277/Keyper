@@ -76,18 +76,6 @@ public class Key extends Generator {
 		this.mGroup = mGroup;
 	}
 
-	public void restore(Date date)
-	{
-		Key r=this.mHistory.get(date);
-		this.mId=r.mId;
-		this.mTitle = r.mTitle;
-		this.mUsername = r.mUsername;
-		this.mPassword =r.mPassword;
-		this.mQuality = r.mQuality;
-		this.mUrl = r.mUrl;
-		this.mExpired = r.mExpired;
-		
-	}
 	
 	
 	public Set<Date> gethistorydates() {
@@ -244,5 +232,18 @@ public class Key extends Generator {
 
 	public boolean getExpiredCheck() {
 		return expiredCheck;
+	}
+	
+	public void Restore(Date date)
+	{
+		this.mId=this.getmHistory().get(date).mId;
+		this.mTitle=this.getmHistory().get(date).mTitle;
+		this.mUsername=this.getmHistory().get(date).mUsername;
+		this.mPassword=this.getmHistory().get(date).mPassword;
+		this.mUrl=this.getmHistory().get(date).mUrl;
+		this.mExpired=new Date();
+		this.expiredCheck=false;
+		this.mHistory.clear();
+		this.mHistory.put(new Date(), this);
 	}
 }

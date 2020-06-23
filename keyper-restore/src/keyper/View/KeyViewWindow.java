@@ -80,6 +80,7 @@ public class KeyViewWindow extends JFrame{
     private Object data[]=new Object[3];
     private Object [][] empty= {{"","",""}};
     private final String[] columnNames = {"Version", "Title","Username"};
+    private boolean restore=false;
     DefaultTableModel emptyTable = new DefaultTableModel(empty,columnNames);
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -300,10 +301,11 @@ public class KeyViewWindow extends JFrame{
 		));
 	}
 	
-	
+
 	private void fillHistoryTable()
 	{
 		int i=0;
+		InitTable();
 		DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
 		for(Date date:editkey.gethistorydates())
 		{
@@ -313,10 +315,11 @@ public class KeyViewWindow extends JFrame{
 			data[2]=editkey.getmHistory().get(date).getmUsername();
 			tableModel.addRow(data);
 			i++;
-		}
-		table.setModel(tableModel);
-	    table.setRowHeight(20);
+		}	
+			table.setModel(tableModel);
+			table.setRowHeight(20);
 	}
+	
 	
 	private void InitActionListeners()
 	{
@@ -345,30 +348,53 @@ public class KeyViewWindow extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-			    
-				editkey.setmUsername(userNameField.getText());
-				editkey.setmTitle(titleField.getText());
-				String pass=passwordField.getText();
-				String rep=repeatField.getText();
-				editkey.setmUrl(urlField.getText());
-				editkey.setExpiredCheck(expiredcheckbox.isSelected());
-				selectedDate =  model.getValue();
-				editkey.setmExpired(selectedDate.getYear()+1900, selectedDate.getMonth()+1,selectedDate.getDate());
-				if(pass.equals(rep))
+				boolean changed=false;
+				if(!(restore))
 				{
-					editkey.setmPassword(pass.toString());
+					if(!(editkey.getmUsername().equals(userNameField.getText())))
+				    {
+				    	editkey.setmUsername(userNameField.getText());
+				    	changed=true;
+				    }
+					
+					
+					if(!(editkey.getmPassword().equals(passwordField.getText())))
+					{
+						String pass=passwordField.getText();
+						String rep=repeatField.getText();
+						if(pass.equals(rep))
+						{
+							editkey.setmPassword(pass.toString());
+							
+						}
+						else
+						{
+							final JDialog dialog = new JDialog();
+							dialog.setAlwaysOnTop(true);   
+							JOptionPane.showMessageDialog(dialog,
+									"The passwords are not equals, "
+											+"please try again",
+											"Error",
+											JOptionPane.WARNING_MESSAGE);
+						}
+						changed=true;
+					}
+					
+					editkey.setmTitle(titleField.getText());
+					editkey.setmUrl(urlField.getText());
+					editkey.setExpiredCheck(expiredcheckbox.isSelected());
+					selectedDate =  model.getValue();
+					editkey.setmExpired(selectedDate.getYear()+1900, selectedDate.getMonth()+1,selectedDate.getDate());
+					
+					if(changed)
+					{
+						System.out.println("!!!");
+						editkey.getmHistory().put(new Date(),editkey);
+					}
+					changed=false;
+				}
+					restore=false;
 					closewindow();
-				}
-				else
-				{
-					final JDialog dialog = new JDialog();
-					dialog.setAlwaysOnTop(true);   
-					JOptionPane.showMessageDialog(dialog,
-			     			"The passwords are not equals, "
-			     			+"please try again",
-						    "Error",
-					    JOptionPane.WARNING_MESSAGE);
-				}
 			}
 			
 		};
@@ -400,8 +426,9 @@ public class KeyViewWindow extends JFrame{
 			public void actionPerformed(ActionEvent e)
 			{
 				int selectedRow = table.getSelectedRow();
-				System.out.println(selectedRow);
-				editkey=editkey.getmHistory().get(keyMap.get(selectedRow));
+				editkey.Restore(keyMap.get(selectedRow));
+				keyMap.clear();
+				restore=true;
 			}
 		};
 		
@@ -422,7 +449,11 @@ public class KeyViewWindow extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				
+				int selectedRow = table.getSelectedRow();
+				HistoryKeyView view=new HistoryKeyView(editkey.getmHistory().get(keyMap.get(selectedRow)),keyMap.get(selectedRow));
+				System.out.println(editkey.getmHistory().get(keyMap.get(selectedRow)).getmTitle());
+				view.setVisible(true);
+				view.setAlwaysOnTop(true);
 			}
 		};
 	}

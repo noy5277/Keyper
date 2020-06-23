@@ -339,6 +339,3 @@ public class BankListWindow extends JFrame implements ActionListener {
 	 }
 	
 }
-
-
-
