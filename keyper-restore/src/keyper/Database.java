@@ -144,7 +144,10 @@ public class Database extends Encryption{
 			psInsert.setInt(9, key.getmExpired().getMonth()+1);
 			psInsert.setInt(10, key.getmExpired().getYear()+1900);
 		   psInsert.executeUpdate();
+		   
+		   
 		   Set<?> entries=key.gethistory();
+		   System.out.println(entries);
 			Iterator<?> itr=entries.iterator();
 			while(itr.hasNext())
 			{

@@ -9,6 +9,7 @@ import javax.swing.JTabbedPane;
 
 import keyper.Key;
 import keyper.MasterPassword;
+import keyper.SaveListener;
 
 import javax.swing.JPanel;
 import java.awt.Toolkit;
@@ -24,6 +25,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import java.awt.Panel;
@@ -356,7 +358,25 @@ public class KeyViewWindow extends JFrame{
 				    	editkey.setmUsername(userNameField.getText());
 				    	changed=true;
 				    }
+					if(!(editkey.getmTitle().equals(titleField.getText())))
+					{
+						editkey.setmTitle(titleField.getText());
+						changed=true;
+					}
 					
+					if(!(editkey.getmUrl().equals(urlField.getText())))
+					{
+						editkey.setmUrl(urlField.getText());
+						changed=true;
+					}
+					
+					if(!(editkey.getExpiredCheck()==expiredcheckbox.isSelected()))
+					{
+						editkey.setExpiredCheck(expiredcheckbox.isSelected());
+						selectedDate =  model.getValue();
+						editkey.setmExpired(selectedDate.getYear()+1900, selectedDate.getMonth()+1,selectedDate.getDate());
+						changed=true;
+					}
 					
 					if(!(editkey.getmPassword().equals(passwordField.getText())))
 					{
@@ -365,7 +385,7 @@ public class KeyViewWindow extends JFrame{
 						if(pass.equals(rep))
 						{
 							editkey.setmPassword(pass.toString());
-							
+							changed=true;
 						}
 						else
 						{
@@ -377,21 +397,16 @@ public class KeyViewWindow extends JFrame{
 											"Error",
 											JOptionPane.WARNING_MESSAGE);
 						}
-						changed=true;
 					}
 					
-					editkey.setmTitle(titleField.getText());
-					editkey.setmUrl(urlField.getText());
-					editkey.setExpiredCheck(expiredcheckbox.isSelected());
-					selectedDate =  model.getValue();
-					editkey.setmExpired(selectedDate.getYear()+1900, selectedDate.getMonth()+1,selectedDate.getDate());
 					
 					if(changed)
 					{
-						System.out.println("!!!");
 						editkey.getmHistory().put(new Date(),editkey);
+						editkey.notifyChanges();
+						changed=false;
 					}
-					changed=false;
+					
 				}
 					restore=false;
 					closewindow();
@@ -429,6 +444,7 @@ public class KeyViewWindow extends JFrame{
 				editkey.Restore(keyMap.get(selectedRow));
 				keyMap.clear();
 				restore=true;
+				editkey.notifyChanges();
 			}
 		};
 		

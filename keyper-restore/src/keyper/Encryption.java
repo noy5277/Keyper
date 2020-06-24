@@ -14,7 +14,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
-public abstract class Encryption extends Generator{
+public abstract class Encryption implements Gen{
 	
 	private static String myKey;
 	final Cipher cipher;
@@ -28,7 +28,7 @@ public abstract class Encryption extends Generator{
 	@SuppressWarnings("static-access")
 	public String createPrivateKey()
 	{
-		this.myKey=generate(15, true, true, true, true);
+		this.myKey=Gen.generate(15, true, true, true, true);
 		return this.myKey;
 	}
 	

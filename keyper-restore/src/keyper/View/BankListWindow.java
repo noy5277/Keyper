@@ -1,6 +1,9 @@
 package keyper.View;
 import java.awt.Component;
 import java.awt.EventQueue;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -14,9 +17,12 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.plaf.ProgressBarUI;
 
 import java.awt.Toolkit;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -27,6 +33,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 import keyper.Key;
 import keyper.MasterPassword;
+import keyper.SaveListener;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.Font;
@@ -36,6 +44,10 @@ import javax.swing.table.TableColumnModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.sql.SQLException;
+
 import javax.swing.JProgressBar;
 import java.awt.Color;
 import javax.swing.JTextField;
@@ -50,14 +62,25 @@ import javax.swing.border.TitledBorder;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.JMenu;
+import javax.swing.border.LineBorder;
+import javax.swing.border.CompoundBorder;
 
 @SuppressWarnings("serial")
-public class BankListWindow extends JFrame implements ActionListener {
+public class BankListWindow extends JFrame implements ActionListener, Observer {
 
 	private JPanel contentPane;
     private MasterPassword master;
     private Map<Integer ,Key> keyMap;
+    private ActionListener refreseBtnAction;
+    private ActionListener saveBtnAction;
+    private ActionListener addkeyBtnAction;
+    private ActionListener deleteKeyBtnAction;
+    private ActionListener copyUsernameBtnAction;
+    private ActionListener copyPasswordBtnAction;
+    private ActionListener lockBtnAction;
+    private JTree tree;
     private JTable table;
+    private JButton saveBtn;
     private final String[] columnNames = {"","Title", "UserName","Password", "URL"};
     private Object data[]=new Object[5];
     private Object [][] empty= {{"","","","",""}};
@@ -89,6 +112,9 @@ public class BankListWindow extends JFrame implements ActionListener {
 
 	
 	public BankListWindow(MasterPassword master) {
+		
+		InitActionListeners();
+		
 		this.master=master;
 		this.keyMap=new HashMap <Integer ,Key>();
 		this.progressBar=new JProgressBar(0,master.getmConf().getmClipBoardSleepTime());
@@ -101,7 +127,8 @@ public class BankListWindow extends JFrame implements ActionListener {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		JTree tree = new JTree();
+		tree = new JTree();
+		tree.setBorder(new LineBorder(new Color(102, 102, 102)));
 		DefaultMutableTreeNode games=new DefaultMutableTreeNode("Games");
 		DefaultMutableTreeNode internet=new DefaultMutableTreeNode("Intenet");
 		DefaultMutableTreeNode email=new DefaultMutableTreeNode("Email");
@@ -128,14 +155,14 @@ public class BankListWindow extends JFrame implements ActionListener {
 		                           tree.getLastSelectedPathComponent();
 		        if (node == null) return;
 		        Object nodeInfo = node.getUserObject();
-		        String selected=nodeInfo.toString();
+		        String treeselected=nodeInfo.toString();
                 
-		       	addColByGroup(selected);
+		       	addColByGroup(treeselected);
 		        
 		    }
 		});
 		tree.setToolTipText("Keys Groups");
-		tree.setBounds(10, 62, 167, 355);
+		tree.setBounds(10, 71, 167, 346);
 		contentPane.add(tree);
 
 		table = new JTable(){
@@ -147,11 +174,11 @@ public class BankListWindow extends JFrame implements ActionListener {
 		table.setShowVerticalLines(false);
 		table.setSurrendersFocusOnKeystroke(true);
 		table.setFillsViewportHeight(true);
-		table.setBounds(10, 11, 575, 355);
+		table.setBounds(1, 107, 571, 247);
 		contentPane.add(table);
 		
 		 JScrollPane settingsmenu = new JScrollPane(table);
-		 settingsmenu.setBounds(187, 62, 573, 355);
+		 settingsmenu.setBounds(187, 71, 571, 346);
 		 getContentPane().add(settingsmenu);
 		
 		 menuItemView.addActionListener(this);
@@ -208,39 +235,51 @@ public class BankListWindow extends JFrame implements ActionListener {
 		 JButton refreseBtn = new JButton("");
 		 refreseBtn.setToolTipText("Refresh");
 		 refreseBtn.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/refresh.png")));
-		 refreseBtn.setBounds(187, 35, 27, 27);
+		 refreseBtn.setBounds(158, 35, 27, 27);
 		 contentPane.add(refreseBtn);
+		 refreseBtn.addActionListener(refreseBtnAction);
 		 
-		 JButton saveBtn = new JButton("");
+		 saveBtn = new JButton("");
+		 saveBtn.setEnabled(false);
 		 saveBtn.setToolTipText("Save");
 		 saveBtn.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/save.png")));
-		 saveBtn.setBounds(217, 35, 27, 27);
+		 saveBtn.setBounds(187, 35, 27, 27);
 		 contentPane.add(saveBtn);
+		 saveBtn.addActionListener(saveBtnAction);
+		 
 		 
 		 JButton addkeyBtn = new JButton("");
 		 addkeyBtn.setToolTipText("Add key");
 		 addkeyBtn.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/addkey.png")));
 		 addkeyBtn.setSelectedIcon(null);
-		 addkeyBtn.setBounds(157, 35, 27, 27);
+		 addkeyBtn.setBounds(129, 35, 27, 27);
 		 contentPane.add(addkeyBtn);
+		 addkeyBtn.addActionListener(addkeyBtnAction);
 		 
 		 JButton deleteKeyBtn = new JButton("");
 		 deleteKeyBtn.setToolTipText("Delete key");
 		 deleteKeyBtn.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/deletekey.png")));
-		 deleteKeyBtn.setBounds(126, 35, 27, 27);
+		 deleteKeyBtn.setBounds(99, 35, 27, 27);
 		 contentPane.add(deleteKeyBtn);
+		 deleteKeyBtn.addActionListener(deleteKeyBtnAction);
 		 
 		 JButton copyUsernameBtn = new JButton("");
-		 copyUsernameBtn.setToolTipText("Copy username");
+		 copyUsernameBtn.setToolTipText("Copy Username");
 		 copyUsernameBtn.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/copyusername.png")));
-		 copyUsernameBtn.setBounds(95, 35, 27, 27);
+		 copyUsernameBtn.setBounds(70, 35, 27, 27);
 		 contentPane.add(copyUsernameBtn);
 		 
 		 JButton copyPasswordBtn = new JButton("");
-		 copyPasswordBtn.setToolTipText("Copy password");
+		 copyPasswordBtn.setToolTipText("Copy Password");
 		 copyPasswordBtn.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/copypassword.png")));
-		 copyPasswordBtn.setBounds(65, 35, 27, 27);
+		 copyPasswordBtn.setBounds(40, 35, 27, 27);
 		 contentPane.add(copyPasswordBtn);
+		 
+		 JButton lockBtn = new JButton("");
+		 lockBtn.setToolTipText("Lock Database");
+		 lockBtn.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/Lock-Lock-icon-16.png")));
+		 lockBtn.setBounds(10, 35, 27, 27);
+		 contentPane.add(lockBtn);
 		 
 	}
 	
@@ -302,6 +341,7 @@ public class BankListWindow extends JFrame implements ActionListener {
 	    	 i++;
 	    	 table.getColumnModel().getColumn(0).setCellRenderer(cell);
 	    	 tablemodel=(DefaultTableModel) table.getModel();
+	    	 key.addObserver(this);
 	     }
 	     table.setModel(tablemodel);
 	     table.setRowHeight(20);
@@ -344,14 +384,17 @@ public class BankListWindow extends JFrame implements ActionListener {
 	    
 	    if (menu == menuItemView)
 	    {
-	    	System.out.println("menuItemView action!!");
+	    	HistoryKeyView view=new HistoryKeyView(keyMap.get(selectedRow),keyMap.get(selectedRow).getmExpired());
+	    	view.setVisible(true);
+
 	    }
 	    else if(menu == menuItemDelete)
 	    {
-	    	System.out.println("menuItemDelete action!!");
+	    	master.getmBank().removekey(keyMap.get(selectedRow));
 	    }
 	    else if(menu == menuItemEdit)
 	    {
+	    	keyMap.get(selectedRow).addObserver(this);
 	    	KeyViewWindow keyview=new KeyViewWindow(keyMap.get(selectedRow));
 	    	keyview.setVisible(true);
 	    }
@@ -393,8 +436,84 @@ public class BankListWindow extends JFrame implements ActionListener {
 		 thread.start();
 	 }
 	 
-	 public void RefreshTable(String group)
+	 public void RefreshTable()
 	 {
-		 addColByGroup(group);	
+		 DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
+		 if (node == null) return;
+		 Object nodeInfo = node.getUserObject();
+		 String treeselected=nodeInfo.toString();  
+		 addColByGroup(treeselected);
+		 	
 	 }
+	 
+	 
+	private void InitActionListeners()
+	{
+		deleteKeyBtnAction=new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				int selectedRow = table.getSelectedRow();
+				master.getmBank().removekey(keyMap.get(selectedRow));
+				keyMap.get(selectedRow).notifyChanges();
+			}
+		};
+		
+		refreseBtnAction=new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				RefreshTable();
+			}
+		};
+		
+		saveBtnAction=new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				try {
+					master.getmDatabase().close(master.getmBank());
+					saveBtn.setEnabled(false);
+				} catch (InvalidKeyException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IllegalBlockSizeException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (BadPaddingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		};
+		
+		addkeyBtnAction=new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				
+			}
+		};
+	}
+	
+	@Override
+	public void update(Observable o,Object arg)
+	{
+		System.out.println("notifyy successs");
+		RefreshTable();
+		saveBtn.setEnabled(true);
+	}
 }

@@ -7,14 +7,18 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Observable;
 import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JProgressBar;
 
+import keyper.View.BankListWindow;
 
 
-public class Key extends Generator {
+
+public class Key extends Observable implements Gen{
 	
 	private final int mAutocleartime=12; //wait after copy to clipboard
 	private String mId;
@@ -27,11 +31,12 @@ public class Key extends Generator {
 	private Date mExpired;
 	private boolean expiredCheck;
     private Map<Date, Key> mHistory;
-  
+
 
   	@SuppressWarnings("deprecation")
 	public Key (String mTitle,String mGroup, String mUsername, String mPassword, String mUrl){
-  		this.mId=generate(5, false, false, true, false);
+  		
+  		this.mId=Gen.generate(5, false, false, false, false);
   		this.mGroup=mGroup;
 		this.mTitle = mTitle;
 		this.mUsername = mUsername;
@@ -42,6 +47,7 @@ public class Key extends Generator {
 		this.expiredCheck=false;
 		this.mHistory = new HashMap<>();
 		mHistory.put(new Date(), this);
+		
 	}
 
 
@@ -49,9 +55,13 @@ public class Key extends Generator {
 		
 	}
 
-
+	public void notifyChanges()
+	{
+		System.out.println(super.countObservers());
+		super.setChanged();
+		super.notifyObservers(this);
+	}
 	
-
 	public void setExpiredCheck(boolean expiredCheck) {
 		this.expiredCheck = expiredCheck;
 	}
@@ -126,7 +136,7 @@ public class Key extends Generator {
 	}
 	
 	public void generatePassword(int lenght,boolean capital, boolean letter, boolean numbers, boolean specials) {
-		this.mPassword=generate(lenght, capital, letter, numbers, specials);
+	this.mPassword=Gen.generate(lenght, capital, letter, numbers, specials);
 		
 	}
 	
@@ -233,6 +243,7 @@ public class Key extends Generator {
 	public boolean getExpiredCheck() {
 		return expiredCheck;
 	}
+	
 	
 	public void Restore(Date date)
 	{
