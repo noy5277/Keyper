@@ -36,7 +36,7 @@ public class Key extends Observable implements Gen{
   	@SuppressWarnings("deprecation")
 	public Key (String mTitle,String mGroup, String mUsername, String mPassword, String mUrl){
   		
-  		this.mId=Gen.generate(5, false, false, false, false);
+  		this.mId=Gen.generate(5, false, false, true, false);
   		this.mGroup=mGroup;
 		this.mTitle = mTitle;
 		this.mUsername = mUsername;

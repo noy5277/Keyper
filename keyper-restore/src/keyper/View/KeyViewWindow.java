@@ -269,11 +269,13 @@ public class KeyViewWindow extends JFrame{
 		lblNewLabel_2.setFont(new Font("Levenim MT", Font.BOLD, 18));
 		panel.add(lblNewLabel_2);
 		
-		
+		Date date=new Date();
 		Properties p = new Properties();
 		p.put("text.today", "Today");
 		p.put("text.month", "Month");
 		p.put("text.year", "Year");
+		model = new UtilDateModel();
+		model.setDate(date.getYear()+1900,date.getMonth(),date.getDate());
 		JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
 		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
 		springLayout=new SpringLayout();
@@ -286,6 +288,7 @@ public class KeyViewWindow extends JFrame{
 		datePicker.getJFormattedTextField().setBounds(0, 0, 271, 23);
 		datePicker.setBounds(88, 187, 183, 23);
 		properties.add(datePicker);
+		model.setSelected(true);
 		
 		FillFields();
 		

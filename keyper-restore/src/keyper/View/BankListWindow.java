@@ -79,6 +79,7 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
     private ActionListener copyPasswordBtnAction;
     private ActionListener lockBtnAction;
     private JTree tree;
+    private Key k;
     private JTable table;
     private JButton saveBtn;
     private final String[] columnNames = {"","Title", "UserName","Password", "URL"};
@@ -114,7 +115,6 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 	public BankListWindow(MasterPassword master) {
 		
 		InitActionListeners();
-		
 		this.master=master;
 		this.keyMap=new HashMap <Integer ,Key>();
 		this.progressBar=new JProgressBar(0,master.getmConf().getmClipBoardSleepTime());
@@ -130,7 +130,7 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 		tree = new JTree();
 		tree.setBorder(new LineBorder(new Color(102, 102, 102)));
 		DefaultMutableTreeNode games=new DefaultMutableTreeNode("Games");
-		DefaultMutableTreeNode internet=new DefaultMutableTreeNode("Intenet");
+		DefaultMutableTreeNode internet=new DefaultMutableTreeNode("Internet");
 		DefaultMutableTreeNode email=new DefaultMutableTreeNode("Email");
 		DefaultMutableTreeNode group=new DefaultMutableTreeNode("Groups");
 		DefaultTreeModel grouptree=new DefaultTreeModel(group);
@@ -341,7 +341,6 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 	    	 i++;
 	    	 table.getColumnModel().getColumn(0).setCellRenderer(cell);
 	    	 tablemodel=(DefaultTableModel) table.getModel();
-	    	 key.addObserver(this);
 	     }
 	     table.setModel(tablemodel);
 	     table.setRowHeight(20);
@@ -446,6 +445,10 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 		 	
 	 }
 	 
+	public void addObserverkey(Key k)
+	{
+		k.addObserver(this);
+	}
 	 
 	private void InitActionListeners()
 	{
@@ -499,11 +502,16 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 			}
 		};
 		
+		
 		addkeyBtnAction=new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
+				Key k=new Key("","","","","");
+				addObserverkey(k);
+				AddKeyFram addfram=new AddKeyFram(master, k);
+				addfram.setVisible(true);
 				
 			}
 		};
