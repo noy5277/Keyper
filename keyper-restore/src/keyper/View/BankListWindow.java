@@ -102,6 +102,7 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
     DefaultTableModel emptyTable = new DefaultTableModel(empty,columnNames);
     private JTextField keytextField;
     private JMenuBar menuBar;
+    private JMenuItem openDatabaseBtn;
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -221,9 +222,12 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 		 JMenu filemenu = new JMenu("File");
 		 menuBar.add(filemenu);
 		 
-		 JMenuItem newDatabaseMenuItem = new JMenuItem("New Database");
-		 newDatabaseMenuItem.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/New-Database-icon16.png")));
-		 filemenu.add(newDatabaseMenuItem);
+		 JMenuItem newDatabaseBtn = new JMenuItem("New Database");
+		 newDatabaseBtn.setIcon(null);
+		 filemenu.add(newDatabaseBtn);
+		 
+		 openDatabaseBtn = new JMenuItem("Open");
+		 filemenu.add(openDatabaseBtn);
 		 
 		 JMenu groupsmenu = new JMenu("Groups");
 		 menuBar.add(groupsmenu);

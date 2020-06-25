@@ -47,6 +47,7 @@ public class Configuration extends Encryption {
     private DocumentBuilder dBuilder;
     private String  mPrivatekey;
     
+	
 	public Configuration(MasterPassword master) throws NoSuchAlgorithmException, NoSuchPaddingException, ParserConfigurationException
 	{
       super();
@@ -60,6 +61,12 @@ public class Configuration extends Encryption {
 	  this.dBuilder = dbFactory.newDocumentBuilder();
       
 	}
+	
+	
+	public File getmBinFile() {
+		return mBinFile;
+	}
+
 
 	public void setmClipBoardPauseTime(int mClipBoardPauseTime) {
 		this.mClipBoardPauseTime = mClipBoardPauseTime;
