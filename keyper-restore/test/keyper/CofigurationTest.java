@@ -7,10 +7,21 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 
 public class CofigurationTest{
 	private static MasterPassword master;
+	
+	@Before
+	public  void Deletefiles() throws Exception
+	{
+		MasterPassword master=new MasterPassword();
+		File f=new File("C:\\Users\\"+master.getUsername()+"\\AppData\\Roaming\\Keyper");
+		f.delete();
+		f=new File("\"C:\\\\sqlite\\\\db\\\\database.db\"");
+		f.delete();
+	}
 	
 	@Test
 	public void FilesCreation() throws Exception
