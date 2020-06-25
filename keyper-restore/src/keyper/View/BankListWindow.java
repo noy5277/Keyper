@@ -87,6 +87,12 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
     private Object [][] empty= {{"","","","",""}};
     private JProgressBar progressBar;
     private JPopupMenu popupMenu;
+    private JButton deleteKeyBtn;
+    private JButton copyUsernameBtn;
+    private JButton copyPasswordBtn;
+    private JButton addkeyBtn;
+    private JButton lockBtn;
+    private JButton refreseBtn;
     JMenuItem menuItemView = new JMenuItem("View");
 	JMenuItem menuItemDelete = new JMenuItem("Delete");
 	JMenuItem menuItemEdit = new JMenuItem("Edit");
@@ -232,7 +238,7 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 		 JMenu aboutMenu = new JMenu("About");
 		 menuBar.add(aboutMenu);
 		 
-		 JButton refreseBtn = new JButton("");
+		 refreseBtn = new JButton("");
 		 refreseBtn.setToolTipText("Refresh");
 		 refreseBtn.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/refresh.png")));
 		 refreseBtn.setBounds(158, 35, 27, 27);
@@ -248,7 +254,7 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 		 saveBtn.addActionListener(saveBtnAction);
 		 
 		 
-		 JButton addkeyBtn = new JButton("");
+		 addkeyBtn = new JButton("");
 		 addkeyBtn.setToolTipText("Add key");
 		 addkeyBtn.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/addkey.png")));
 		 addkeyBtn.setSelectedIcon(null);
@@ -256,34 +262,72 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 		 contentPane.add(addkeyBtn);
 		 addkeyBtn.addActionListener(addkeyBtnAction);
 		 
-		 JButton deleteKeyBtn = new JButton("");
+		 deleteKeyBtn = new JButton("");
 		 deleteKeyBtn.setToolTipText("Delete key");
+		 deleteKeyBtn.setEnabled(false);
 		 deleteKeyBtn.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/deletekey.png")));
 		 deleteKeyBtn.setBounds(99, 35, 27, 27);
 		 contentPane.add(deleteKeyBtn);
 		 deleteKeyBtn.addActionListener(deleteKeyBtnAction);
 		 
-		 JButton copyUsernameBtn = new JButton("");
+		 copyUsernameBtn = new JButton("");
 		 copyUsernameBtn.setToolTipText("Copy Username");
+		 copyUsernameBtn.setEnabled(false);
 		 copyUsernameBtn.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/copyusername.png")));
 		 copyUsernameBtn.setBounds(70, 35, 27, 27);
 		 contentPane.add(copyUsernameBtn);
+		 copyUsernameBtn.addActionListener(copyUsernameBtnAction);
 		 
-		 JButton copyPasswordBtn = new JButton("");
+		 copyPasswordBtn = new JButton("");
 		 copyPasswordBtn.setToolTipText("Copy Password");
+		 copyPasswordBtn.setEnabled(false);
 		 copyPasswordBtn.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/copypassword.png")));
 		 copyPasswordBtn.setBounds(40, 35, 27, 27);
 		 contentPane.add(copyPasswordBtn);
+		 copyPasswordBtn.addActionListener(copyPasswordBtnAction);
 		 
-		 JButton lockBtn = new JButton("");
+		 lockBtn = new JButton("");
 		 lockBtn.setToolTipText("Lock Database");
 		 lockBtn.setIcon(new ImageIcon(BankListWindow.class.getResource("/keyper/View/Icons/Lock-Lock-icon-16.png")));
 		 lockBtn.setBounds(10, 35, 27, 27);
 		 contentPane.add(lockBtn);
+		 lockBtn.addActionListener(lockBtnAction);
 		 
 	}
 	
-
+	private void EnableBtns()
+	{
+		copyPasswordBtn.setEnabled(true);
+		copyUsernameBtn.setEnabled(true);
+		deleteKeyBtn.setEnabled(true);
+	}
+	
+	private void DisableAllButtons()
+	{
+		refreseBtn.setEnabled(false);
+		saveBtn.setEnabled(false);
+		addkeyBtn.setEnabled(false);
+		lockBtn.setEnabled(false);
+		addkeyBtn.setEnabled(false);
+		copyPasswordBtn.setEnabled(false);
+		copyUsernameBtn.setEnabled(false);
+		deleteKeyBtn.setEnabled(false);
+		
+	}
+	
+	public void LockAll()
+	{
+		try {
+			master.getmBank().getBank().clear();
+			DisableAllButtons();
+			master.getmDatabase().ShutDown();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			//e1.printStackTrace();
+		}		
+		
+	}
+	
 	
 	private void addColByGroup(String selected)
 	{
@@ -380,7 +424,7 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 	 {
 	    JMenuItem menu = (JMenuItem) event.getSource();
 	    int selectedRow = table.getSelectedRow();
-	    
+	    EnableBtns();
 	    if (menu == menuItemView)
 	    {
 	    	HistoryKeyView view=new HistoryKeyView(keyMap.get(selectedRow),keyMap.get(selectedRow).getmExpired());
@@ -389,7 +433,10 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 	    }
 	    else if(menu == menuItemDelete)
 	    {
+	    	keyMap.get(selectedRow).addObserver(this);
 	    	master.getmBank().removekey(keyMap.get(selectedRow));
+	    	keyMap.get(selectedRow).notifyChanges();
+	    	
 	    }
 	    else if(menu == menuItemEdit)
 	    {
@@ -515,6 +562,38 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 				
 			}
 		};
+		
+		copyUsernameBtnAction=new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				int selectedRow = table.getSelectedRow();
+				copyUsername(selectedRow);
+				powerOnProgessbar();
+			}
+		};
+		
+		copyPasswordBtnAction=new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				int selectedRow = table.getSelectedRow();
+				copyPassword(selectedRow);
+				powerOnProgessbar();
+			}
+		};
+		
+		lockBtnAction=new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				LockAll();
+			}
+		};
+		
 	}
 	
 	@Override
@@ -523,5 +602,7 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 		System.out.println("notifyy successs");
 		RefreshTable();
 		saveBtn.setEnabled(true);
+		table.setModel(emptyTable);
+		
 	}
 }

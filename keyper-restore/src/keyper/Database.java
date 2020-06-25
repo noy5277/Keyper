@@ -107,6 +107,13 @@ public class Database extends Encryption{
 		}
 	}
 	
+	
+	public void ShutDown() throws SQLException
+	{
+		this.dbpath="jdbc:derby:"+master.getPath()+";shutdown=true";
+		this.conn = DriverManager.getConnection(dbpath,"keyper",master.getPassword());
+	}
+	
 	public void close(Bank bnk) throws SQLException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException
 	{
 	      droptables();
@@ -114,9 +121,9 @@ public class Database extends Encryption{
 		  try
           {			  
               push(bnk);
-			  DriverManager.getConnection("jdbc:sqlite:;shutdown=true");
               conn.close();
 			  conn=null;
+			  
           }
           catch(SQLException se)
           {
@@ -147,8 +154,8 @@ public class Database extends Encryption{
 		   
 		   
 		   Set<?> entries=key.gethistory();
-		   System.out.println(entries);
 			Iterator<?> itr=entries.iterator();
+			System.out.println(itr);
 			while(itr.hasNext())
 			{
 				Key k;

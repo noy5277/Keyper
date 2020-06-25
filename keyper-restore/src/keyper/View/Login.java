@@ -42,7 +42,9 @@ public class Login extends JFrame {
 	private JTextField keyfileField;
 	@SuppressWarnings("unused")
 	private JCheckBox passwordcheckbox;
-
+	private ActionListener cancelBtnAction;
+	private BankListWindow fram;
+	private MasterPassword editmaster;
 	/**
 	 * Launch the application.
 	 */
@@ -70,6 +72,10 @@ public class Login extends JFrame {
 	 */
 	@SuppressWarnings("deprecation")
 	public Login(MasterPassword master)  {
+		
+		InitActionListeners();
+		
+		editmaster=master;
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Login.class.getResource("/keyper/View/Icons/secrecy-icon.png")));
 		setTitle("Login");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -151,6 +157,7 @@ public class Login extends JFrame {
 		JButton CancelButton = new JButton("Cancel");
 		CancelButton.setBounds(323, 159, 89, 23);
 		contentPane.add(CancelButton);
+		CancelButton.addActionListener(cancelBtnAction);
 		
 		JButton OKButton = new JButton("OK");
 		OKButton.setBounds(231, 159, 89, 23);
@@ -194,8 +201,7 @@ public class Login extends JFrame {
 				
 			   master.getmDatabase().connect();
 			   master.getmDatabase().pull(master.getmBank());
-			   master.getmDatabase().close(master.getmBank());
-			   BankListWindow fram=new BankListWindow(master);
+			   fram=new BankListWindow(master);
 			   fram.setVisible(true);
 			   closewindow();
 			 }
@@ -245,6 +251,20 @@ public class Login extends JFrame {
 		
    }
 
+	private void InitActionListeners()
+	{
+		cancelBtnAction=new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				fram=new BankListWindow(editmaster);
+				fram.LockAll();
+				fram.setVisible(true);
+				closewindow();
+			}
+		};
+	}
  private void closewindow() 
  {
 	this.dispose();
