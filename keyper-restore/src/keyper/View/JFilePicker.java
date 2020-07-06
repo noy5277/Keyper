@@ -1,5 +1,7 @@
 package keyper.View;
 import java.awt.event.ActionEvent;
+import java.io.File;
+
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 
@@ -50,13 +52,23 @@ public class JFilePicker {
         fileChooser.addChoosableFileFilter(filter);
     }
     
-    public String getSelectedFilePath()
+    @SuppressWarnings("unused")
+	private String getSelectedFilePath()
     {	
            return path;
     }
     
+    
+	public void setFileName(String filename)
+    {
+		fileChooser.setSelectedFile(
+				new File(fileChooser.getCurrentDirectory().getAbsolutePath() +
+				"\\" + filename));
+    }
+    
 
-	public JFileChooser getFileChooser() {
+	@SuppressWarnings("unused")
+	private JFileChooser getFileChooser() {
         return this.fileChooser;
     }
     

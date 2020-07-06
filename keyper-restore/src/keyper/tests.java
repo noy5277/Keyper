@@ -8,7 +8,7 @@ public class tests extends Autentication
 	{
 		Key key=new Key("gmail","Email", "noy5277@gmail.com", "P@ssw0rd", "gmail.com");
 	    MasterPassword master=new MasterPassword();
-	    master.create("C:\\sqlite\\db\\database.db","buhnoy5667728", "","");
+	    master.create("C:\\sqlite\\1\\database.db","buhnoy5667728");
 	    master.getmDatabase().create();
 	    master.getmBank().addkey(key);
 	    master.getmConf().createFiles(master);

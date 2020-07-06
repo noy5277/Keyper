@@ -27,12 +27,12 @@ public class MasterPassword extends Autentication{
 		this.mDatabase=new Database(this);
 	}
 	
-	public void create(String path, String password, String keyfile, String sid)
+	public void create(String path, String password)
 	{
 		this.mpassword = password;
 		this.path=path;
-		this.mkeyfile = keyfile;
-		this.msid = sid;
+		this.mkeyfile="";
+		this.msid="";
 	}
 	
 	public String getMpassword() {
@@ -47,8 +47,8 @@ public class MasterPassword extends Autentication{
 		return mkeyfile;
 	}
 
-	public void setMkeyfile(String mkeyfile) {
-		this.mkeyfile = mkeyfile;
+	public void setMkeyfile(File keyfilepath) throws NoSuchAlgorithmException, IOException {
+		this.mkeyfile = getFileChecksum(keyfilepath);
 	}
 
 	public String getMsid() {

@@ -52,6 +52,7 @@ public class Configuration extends Encryption {
 	{
       super();
       this.master=master;
+      this.mLastDbPath=" ";
       this.mXmlFile=new File("C:\\Users\\"+master.getUsername()+"\\AppData\\Roaming\\Keyper\\configuration.xml");
       this.mBinFile=new File("C:\\Users\\"+master.getUsername()+"\\AppData\\Roaming\\Keyper\\ProtectedUserKey.dat");
       this.dbFactory = DocumentBuilderFactory.newInstance();

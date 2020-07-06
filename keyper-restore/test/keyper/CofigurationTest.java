@@ -19,8 +19,6 @@ public class CofigurationTest{
 		MasterPassword master=new MasterPassword();
 		File f=new File("C:\\Users\\"+master.getUsername()+"\\AppData\\Roaming\\Keyper");
 		f.delete();
-		f=new File("\"C:\\\\sqlite\\\\db\\\\database.db\"");
-		f.delete();
 	}
 	
 	@Test
@@ -28,7 +26,7 @@ public class CofigurationTest{
 	{
 		Key key=new Key("gmail","Email", "noy5277@gmail.com", "P@ssw0rd", "gmail.com");
 	    master=new MasterPassword();
-	    master.create("C:\\sqlite\\db\\database.db","buhnoy5667728", "","");
+	    master.create("C:\\sqlite\\test\\database.db","buhnoy5667728");
 	    master.getmBank().addkey(key);
 	    master.getmConf().createFiles(master);
 		assertTrue("Check if xml conf file is created, the result should be true",master.getmConf().getmXmlFile().exists());

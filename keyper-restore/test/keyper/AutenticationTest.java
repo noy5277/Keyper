@@ -12,7 +12,7 @@ import org.junit.Test;
 public class AutenticationTest extends Autentication {
 
 	@Test
-	public void CompareEqualeFiles() throws NoSuchAlgorithmException, IOException
+	public void CompareShaFiles() throws NoSuchAlgorithmException, IOException
 	{
 		File source=new File("C:\\Test\\Source.txt");
 		File destination=new File("c:\\Test\\Destination2.txt");

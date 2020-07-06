@@ -55,9 +55,15 @@ public class Login extends JFrame {
 					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 					
 				    MasterPassword master=new MasterPassword();
-				    master.importConfiguration();
-					Login frame = new Login(master);
-					frame.setVisible(true);
+				    if(new File("C:\\Users\\"+master.getUsername()+"\\AppData\\Roaming\\Keyper").exists())
+				    {
+				    	master.importConfiguration();
+				    	
+				    }
+				    Login frame = new Login(master);
+				 	frame.setVisible(true);
+				    
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

@@ -78,6 +78,7 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
     private ActionListener copyUsernameBtnAction;
     private ActionListener copyPasswordBtnAction;
     private ActionListener lockBtnAction;
+    private ActionListener newDatabaseAction;
     private JTree tree;
     private Key k;
     private JTable table;
@@ -225,9 +226,13 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 		 JMenuItem newDatabaseBtn = new JMenuItem("New Database");
 		 newDatabaseBtn.setIcon(null);
 		 filemenu.add(newDatabaseBtn);
+		 newDatabaseBtn.addActionListener(newDatabaseAction);
 		 
 		 openDatabaseBtn = new JMenuItem("Open");
 		 filemenu.add(openDatabaseBtn);
+		 
+		 JMenuItem connectBtn = new JMenuItem("Connect ");
+		 filemenu.add(connectBtn);
 		 
 		 JMenu groupsmenu = new JMenu("Groups");
 		 menuBar.add(groupsmenu);
@@ -553,6 +558,22 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 			}
 		};
 		
+		newDatabaseAction=new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				NewDatabaseFram fram;
+				try {
+					fram = new NewDatabaseFram();
+					fram.setVisible(true);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+		};
 		
 		addkeyBtnAction=new ActionListener()
 		{
@@ -597,6 +618,7 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 				LockAll();
 			}
 		};
+		
 		
 	}
 	
