@@ -8,6 +8,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -31,6 +32,8 @@ import javax.swing.UIManager;
 import javax.swing.JTable;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
+
+import keyper.Bank;
 import keyper.Key;
 import keyper.MasterPassword;
 
@@ -82,6 +85,14 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
     private JTree tree;
     private Key k;
     private JTable table;
+    private Icommand saveButtonCommand;
+    private Icommand newDatabaseCommand;
+    private Icommand copyUsernameCommand;
+    private Icommand copyPasswordCommand;
+    private Icommand lockDbCommand;
+    private Icommand refreshTableCommand;
+    private Icommand deletekeyCommand;
+    private Icommand addKeyCommand;
     private JButton saveBtn;
     private final String[] columnNames = {"","Title", "UserName","Password", "URL"};
     private Object data[]=new Object[5];
@@ -121,6 +132,16 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 
 	
 	public BankListWindow(MasterPassword master) {
+		
+		
+		this.addKeyCommand=new AddKeyCommand(master.getmBank());
+		this.deletekeyCommand=new DeleteKeyCommand(master.getmBank());
+		this.refreshTableCommand=new RefreshTableCommand();
+		this.lockDbCommand=new LockDbCommand();
+		this.copyPasswordCommand=new CopyPasswordCommand();
+		this.copyUsernameCommand=new CopyUsernameCommand();
+		this.newDatabaseCommand=new NewDatabaseCommand();
+		this.saveButtonCommand=new SaveButtonCommand();
 		
 		InitActionListeners();
 		this.master=master;
@@ -311,7 +332,7 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 		deleteKeyBtn.setEnabled(true);
 	}
 	
-	private void DisableAllButtons()
+	public void DisableAllButtons()
 	{
 		refreseBtn.setEnabled(false);
 		saveBtn.setEnabled(false);
@@ -324,20 +345,12 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 		
 	}
 	
-	public void LockAll()
-	{
-		try {
-			master.getmBank().getBank().clear();
-			DisableAllButtons();
-			master.getmDatabase().ShutDown();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			//e1.printStackTrace();
-		}		
-		
+	
+	public Icommand getLockDbCommand() {
+		return lockDbCommand;
 	}
-	
-	
+
+
 	private void addColByGroup(String selected)
 	{
 	  Set<Key> keys=master.getmBank().getBank();
@@ -442,10 +455,7 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 	    }
 	    else if(menu == menuItemDelete)
 	    {
-	    	keyMap.get(selectedRow).addObserver(this);
-	    	master.getmBank().removekey(keyMap.get(selectedRow));
-	    	keyMap.get(selectedRow).notifyChanges();
-	    	
+	    	deletekeyCommand.execute();
 	    }
 	    else if(menu == menuItemEdit)
 	    {
@@ -455,11 +465,11 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 	    }
 	    else if(menu == menuItemCopyUsername)
 	    {
-			copyUsername(selectedRow);
+			copyUsernameCommand.execute();
 	    }
 	    else if(menu == menuItemCopyPassword)
 	    {
-	    	copyPassword(selectedRow);
+	    	copyPasswordCommand.execute();
 	    }
 	 }
 	 
@@ -491,21 +501,6 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 		 thread.start();
 	 }
 	 
-	 public void RefreshTable()
-	 {
-		 DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
-		 if (node == null) return;
-		 Object nodeInfo = node.getUserObject();
-		 String treeselected=nodeInfo.toString();  
-		 addColByGroup(treeselected);
-		 	
-	 }
-	 
-	public void addObserverkey(Key k)
-	{
-		k.addObserver(this);
-	}
-	 
 	private void InitActionListeners()
 	{
 		deleteKeyBtnAction=new ActionListener()
@@ -513,10 +508,9 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				int selectedRow = table.getSelectedRow();
-				master.getmBank().removekey(keyMap.get(selectedRow));
-				keyMap.get(selectedRow).notifyChanges();
+				deletekeyCommand.execute();
 			}
+			
 		};
 		
 		refreseBtnAction=new ActionListener()
@@ -524,7 +518,7 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				RefreshTable();
+				refreshTableCommand.execute();
 			}
 		};
 		
@@ -533,28 +527,7 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				try {
-					master.getmDatabase().close(master.getmBank());
-					saveBtn.setEnabled(false);
-				} catch (InvalidKeyException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IllegalBlockSizeException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (BadPaddingException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (UnsupportedEncodingException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				saveButtonCommand.execute();
 			}
 		};
 		
@@ -563,15 +536,7 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				NewDatabaseFram fram;
-				try {
-					fram = new NewDatabaseFram();
-					fram.setVisible(true);
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				
+				newDatabaseCommand.execute();
 			}
 		};
 		
@@ -580,11 +545,7 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				Key k=new Key("","","","","");
-				addObserverkey(k);
-				AddKeyFram addfram=new AddKeyFram(master, k);
-				addfram.setVisible(true);
-				
+				addKeyCommand.execute();		
 			}
 		};
 		
@@ -593,9 +554,7 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				int selectedRow = table.getSelectedRow();
-				copyUsername(selectedRow);
-				powerOnProgessbar();
+				copyUsernameCommand.execute();
 			}
 		};
 		
@@ -604,9 +563,7 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				int selectedRow = table.getSelectedRow();
-				copyPassword(selectedRow);
-				powerOnProgessbar();
+				copyPasswordCommand.execute();
 			}
 		};
 		
@@ -615,20 +572,237 @@ public class BankListWindow extends JFrame implements ActionListener, Observer {
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				LockAll();
+				lockDbCommand.execute();
 			}
-		};
-		
-		
+		};	
 	}
+	
 	
 	@Override
 	public void update(Observable o,Object arg)
 	{
 		System.out.println("notifyy successs");
-		RefreshTable();
+		refreshTableCommand.execute();
 		saveBtn.setEnabled(true);
 		table.setModel(emptyTable);
 		
 	}
+	
+	////////////////////////////////////////////////////
+	///Commands Patterns
+	///
+	///
+	///////////////////////////////////////////////////
+	
+	class SaveButtonCommand implements Icommand
+	{
+		public SaveButtonCommand()
+		{
+			
+		}
+		
+		public void execute()
+		{
+			try {
+				master.getmDatabase().close(master.getmBank());
+			} catch (InvalidKeyException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalBlockSizeException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (BadPaddingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			saveBtn.setEnabled(false);
+		}
+		
+		public void unexecute()
+		{
+			
+		}
+	}
+	
+	class NewDatabaseCommand implements Icommand
+	{
+		NewDatabaseFram fram;
+		public NewDatabaseCommand()
+		{
+			try {
+				fram = new NewDatabaseFram();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		public void execute()
+		{
+			fram.setVisible(true);
+		}
+		
+		public void unexecute() {
+			
+		}
+		
+	}
+	
+	
+	
+	class CopyUsernameCommand implements Icommand
+	{
+		public CopyUsernameCommand() {
+			
+		}
+		
+		public void execute()
+		{
+			int selectedRow = table.getSelectedRow();
+			copyUsername(selectedRow);
+		}
+		
+		public void unexecute()
+		{
+			
+		}
+	}
+	
+	class CopyPasswordCommand implements Icommand
+	{
+		public CopyPasswordCommand()
+		{
+			
+		}
+		
+		public void execute()
+		{
+			int selectedRow = table.getSelectedRow();
+			copyPassword(selectedRow);	
+		}
+		
+		public void unexecute()
+		{
+			
+		}
+	}
+	
+	class LockDbCommand implements Icommand
+	{
+		public LockDbCommand()
+		{
+			
+		}
+		
+		public void execute()
+		{
+			master.getmBank().getBank().clear();
+			DisableAllButtons();
+			master.getmDatabase().ShutDown();
+		}
+		
+		public void unexecute()
+		{
+			
+		}
+	}
+	
+	
+	
+	class RefreshTableCommand implements Icommand
+	{
+		public RefreshTableCommand()
+		{
+			
+		}
+		
+		public void execute()
+		{
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
+			 if (node == null) return;
+			 Object nodeInfo = node.getUserObject();
+			 String treeselected=nodeInfo.toString();  
+			 addColByGroup(treeselected);
+		}
+		
+		public void unexecute()
+		{
+			
+		}
+	}
+	
+	
+	
+	class DeleteKeyCommand implements Icommand
+	{
+		Bank bank;
+		public DeleteKeyCommand(Bank b)
+		{
+			this.bank=b;
+		}
+		
+		public void execute()
+		{
+			int n = JOptionPane.showConfirmDialog(
+	    		    null,
+	    		    "Are you sure you want to delete the key?",
+	    		    "Warning",
+	    		    JOptionPane.OK_CANCEL_OPTION);
+	    	if(n==0)
+	    	{
+	    		int selectedRow = table.getSelectedRow();
+	    		master.getmBank().removekey(keyMap.get(selectedRow));
+	    		keyMap.get(selectedRow).notifyChanges();
+	    	}
+		}
+		
+		public void unexecute()
+		{
+			
+		}
+	}
+	
+	
+	class AddKeyCommand implements Icommand,Observer
+	{
+		Bank bank;
+		public AddKeyCommand(Bank b)
+		{
+			this.bank=b;
+		}
+	
+		public void execute()
+		{
+			Key k=new Key("","","","","");
+			k.addObserver(this);
+			AddKeyFram addfram=new AddKeyFram(master, k);
+			addfram.setVisible(true);
+		}
+		public void unexecute()
+		{
+		
+		}
+		@Override
+		public void update(Observable o,Object arg)
+		{
+			System.out.println("notifyy successs");
+			refreshTableCommand.execute();
+			saveBtn.setEnabled(true);
+			table.setModel(emptyTable);
+			
+		}	
+	}
+	
+	
+	
 }
+

@@ -23,7 +23,7 @@ public class MasterPassword extends Autentication{
 	
 	public MasterPassword()throws Exception {
 		this.mConf=new Configuration(this);
-		this.mBank=new Bank();
+		this.mBank=Bank.GetInstance();
 		this.mDatabase=new Database(this);
 	}
 	

@@ -5,10 +5,16 @@ import java.util.Set;
 
 public class Bank  {
 	private Set<Key> bank;
+	private static Bank instance=new Bank();
 
-	public Bank() {
+	private Bank() {
 		
 		this.bank=new HashSet<>();
+	}
+	
+	public static Bank GetInstance()
+	{
+		return instance;
 	}
 	
 	public Set<Key> getBank() {

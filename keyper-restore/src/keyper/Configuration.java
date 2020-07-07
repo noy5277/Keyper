@@ -46,7 +46,7 @@ public class Configuration extends Encryption {
 	private DocumentBuilderFactory dbFactory; 
     private DocumentBuilder dBuilder;
     private String  mPrivatekey;
-    
+  
 	
 	public Configuration(MasterPassword master) throws NoSuchAlgorithmException, NoSuchPaddingException, ParserConfigurationException
 	{

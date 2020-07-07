@@ -265,7 +265,7 @@ public class Login extends JFrame {
 			public void actionPerformed(ActionEvent e)
 			{
 				fram=new BankListWindow(editmaster);
-				fram.LockAll();
+				fram.DisableAllButtons();
 				fram.setVisible(true);
 				closewindow();
 			}

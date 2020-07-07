@@ -108,10 +108,14 @@ public class Database extends Encryption{
 	}
 	
 	
-	public void ShutDown() throws SQLException
+	public void ShutDown() 
 	{
 		this.dbpath="jdbc:derby:"+master.getPath()+";shutdown=true";
-		this.conn = DriverManager.getConnection(dbpath,"keyper",master.getPassword());
+		try {
+			this.conn = DriverManager.getConnection(dbpath,"keyper",master.getPassword());
+		} catch (SQLException e) {
+			System.out.println("the database is Shutdown");
+		}
 	}
 	
 	public void close(Bank bnk) throws SQLException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, IOException
