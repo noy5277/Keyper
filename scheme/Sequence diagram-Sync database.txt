@@ -1,0 +1,34 @@
+title Sequence diagram-Sync Databases
+
+actor Employee
+participant keyper
+database Embedded Database
+participant configuration file
+database Destination Database
+
+Employee->keyper:Start application
+activate keyper
+configuration file-->keyper:Initialize
+Embedded Database-->keyper:Initialize 
+keyper-->Employee:Display Login page
+deactivate keyper 
+Employee->keyper:Authentication
+activate keyper
+keyper-->Employee:Display key bank list
+deactivate keyper
+Employee->keyper:Input new key
+activate keyper
+keyper-->Employee:Display key bank list
+deactivate keyper
+
+
+Employee->keyper:Sync to destination DB
+activate keyper
+keyper->Destination Database:Clear
+activate Destination Database
+deactivate keyper
+keyper->Destination Database:Push Data
+activate Destination Database
+deactivate Destination Database
+
+

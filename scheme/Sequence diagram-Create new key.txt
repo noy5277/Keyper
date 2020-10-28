@@ -1,0 +1,41 @@
+title Sequence diagram-Create new key
+
+actor Employee
+participant keyper
+database Embedded Database
+participant configuration file
+
+
+Employee->keyper:Start application
+activate keyper
+configuration file-->keyper:Initialize
+Embedded Database-->keyper:Initialize 
+keyper-->Employee:Display connction page
+deactivate keyper 
+Employee->keyper:Authentication
+activate keyper
+keyper-->Employee:Display key bank list
+deactivate keyper
+Employee->keyper:Input new key
+activate keyper
+keyper-->Employee:Display key bank list
+deactivate keyper
+Employee->keyper:Save
+activate keyper
+keyper->Embedded Database:Update
+deactivate keyper
+Embedded Database->keyper
+activate Embedded Database
+Employee->keyper:close
+activate keyper
+deactivate Embedded Database
+keyper->Embedded Database:Lock
+deactivate keyper
+activate Embedded Database
+keyper-->Employee:hide key bank list
+deactivate Embedded Database
+Employee->keyper:Close application
+keyper->configuration file:Update file
+activate configuration file
+
+
